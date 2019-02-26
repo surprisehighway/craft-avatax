@@ -141,7 +141,6 @@ You can use Craft's [plugin config file](https://docs.craftcms.com/v3/extend/plu
 
 Some things to do, and ideas for potential features:
 
-* Support partial/multiple refunds for a transaction (using CreateTransaction with type "ReturnInvoice").
 * Config settings for default tax codes at the Product Type level.
 
 ---
