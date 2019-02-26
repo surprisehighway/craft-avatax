@@ -24,6 +24,17 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Avatax.
 
+## Setup Overview
+
+Setup and configuration is detailed below, but here's a quick overview of what you'll need to do get started:
+
+1. Configure the plugin settings with your Avalara account info and test the connection.
+2. Configure the plugin settings with your origin address and default tax codes.
+3. Set the "Avatax" tax category to be available to your product types.
+4. Assign the "Avatax" tax category to your products.
+4. Optionally add the product-specfic tax code field to your Product Type fields to allow per-product tax codes.
+5. Optionally add the customer usage type field to your User fields to set up tax-exempt customers.
+
 ## Configuring AvaTax Account Connection
 
 1. Visit the settings page at Settings → Avatax
