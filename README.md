@@ -127,11 +127,7 @@ Promotions are supported. For Sales, the sale price is simply sent to Alavara as
 
 Craft Commerce supports refunds for completed transactions if the [payment gateway](https://craftcommerce.com/support/which-payment-gateways-do-you-support) supports refunds. If refunds are supported for an order Commerce displays a "Refund" button in the order’s Transaction history. 
 
-**Important: Currently the AvaTax plugin only supports full refunds.** 
-
-As of Commerce 2.0 partial refunds can be initiated multiple times from the admin control panel, but currently the AvaTax plugin only supports full refunds. Triggering a full refund for the exact amount of the original order will issue a new Return Invoice for full amount of the corresponding AvaTax transaction.
-
-Partial refunds, returns, or any other changes must be done manually via the AvaTax website.
+As of Commerce 2.0 partial refunds can be initiated multiple times from the admin control panel. Triggering a full refund for the exact amount of the original order will issue a new Return Invoice for full amount of the corresponding AvaTax transaction. Be aware that triggering a partial refund will issue a new Return Invoice for the partial amount to the corresponding AvaTax *customer* but is not tied to the original transaction. This is because AvaTax only issues refunds on a transaction in full, for specific line items, or as a percentage.
 
 
 ## Config Overrides
