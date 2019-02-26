@@ -47,7 +47,6 @@
         "components": {
             "salesTaxService": "surprisehighway\\avatax\\services\\SalesTaxService",
             "logService": "surprisehighway\\avatax\\services\\LogService"
-        },
-        
+        }
     }
 }
