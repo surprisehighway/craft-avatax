@@ -1,0 +1,16 @@
+{% extends "_layouts/cp" %}
+
+{% if title is not defined %}
+    {% set title = 'AvaTax' %}
+{% endif %}
+
+{% set sidebarNavItems = {
+    settings: { label: 'Settings', url: url('avatax/settings') },
+    logs: { label: 'Logs', url: url('avatax/logs') }
+} %}
+
+{% block sidebar %}
+    {% include "_includes/nav" with { items: sidebarNavItems, selectedItem: selectedSidebarNavItem } only %}
+{% endblock %}
+
+{% do view.registerAssetBundle("surprisehighway\\avatax\\assetbundles\\avatax\\AvataxAsset") %}

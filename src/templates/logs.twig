@@ -1,0 +1,38 @@
+{% extends "avatax/_layout" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSidebarNavItem = 'logs' %}
+
+{% block content %}
+
+    <a href="{{ actionUrl('avatax/utility/clear-logs') }}" class="btn right">Clear Logs</a>
+
+    <h2>AvaTax Logs</h2>
+    <table class="data fullwidth">
+        <tr>
+            <th class="light">Date</th>
+            <th class="light" width="85%">Message</th>
+        </tr>   
+        {% for logEntry in logEntries %}
+            <tr>
+                <td>{{ logEntry.date|format('Y-m-d H:i:s') }}</th>
+                <td>
+                    [{{ logEntry.type|ucfirst }}]
+                    {% if logEntry.message %}
+                        {{ logEntry.message }}
+                    {% endif %}
+                    {% if logEntry.data.request is defined %}
+                        <small class="light log-label">Request:</small>
+                        <textarea class="text fullwidth log-response" readonly>{{ logEntry.data.request|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}</textarea>
+                    {% endif %}
+                    {% if logEntry.data.response is defined %}
+                        <small class="light log-label">Response:</small>
+                        <textarea class="text fullwidth log-response" readonly>{{ logEntry.data.response|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}</textarea>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

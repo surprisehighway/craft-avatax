@@ -1,0 +1,38 @@
+/**
+ * Avatax plugin for Craft CMS
+ *
+ * Avatax CSS
+ *
+ * @author    Surprise Highway
+ * @copyright Copyright (c) 2019 Surprise Highway
+ * @link      http://surprisehighway.com
+ * @package   Avatax
+ * @since     2.0.0
+ */
+
+.modal.settings-modal-message {
+	width: 500px;
+}
+
+.log-label {
+	display: block;
+	margin: 5px 0 3px;
+}
+.text.log-response {
+	font-family: Menlo, monospace;
+    font-size: 0.9em !important;
+    white-space: pre;
+    height: 40px;
+    background: #f7f7f7;
+    color: #8f98a3;
+    height: 5em;
+}
+.text.log-response:hover {
+	cursor: pointer;
+	color: inherit;
+}
+.text.log-response:focus {
+	height: 40em;
+	color: inherit;
+	cursor: auto;
+}

@@ -1,0 +1,400 @@
+{% extends "avatax/_layout" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSidebarNavItem = 'settings' %}
+
+{% set fullPageForm = true %}
+
+{% block content %}
+
+{% macro configWarning(setting) -%}
+    {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
+    {%- if configArray[setting] is defined -%}
+        {{- "This is being overridden by the `#{setting}` setting in the `config/avatax.php` file."|raw }}
+    {%- else -%}
+        {{ false }}
+    {%- endif -%}
+{%- endmacro %}
+
+{% from _self import configWarning %}
+
+{% macro configDisabled(setting) -%}
+    {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
+    {%- if configArray[setting] is defined -%}
+        {{ true }}
+    {%- else -%}
+        {{ false }}
+    {%- endif -%}
+{%- endmacro %}
+
+{% from _self import configDisabled %}
+
+<input type="hidden" name="action" value="plugins/save-plugin-settings">
+<input type="hidden" name="pluginHandle" value="avatax">
+
+{% namespace 'settings' %}
+
+	<h2>AvaTax Environment</h2>
+
+	{{ forms.selectField({
+	    label:        '',
+	    instructions: 'Select your AvaTax environment.',
+	    id:           'environment',
+	    name:         'environment',
+	    value:        settings['environment'],
+	    warning:      configWarning('environment'),
+	    'options': {
+	        'production' : 'Production',
+	        'sandbox' : 'Sandbox'
+	        }
+	    })
+	}}
+
+    <input id="test-connection-btn" type="button" class="btn" value="{{ 'Test Connection' | t }}">
+    <div id="test-connection-spinner" class="spinner hidden"></div>
+
+    <hr>
+
+    <h2>Production Account</h2>
+
+    {{ forms.textField({
+        label:        'Account ID',
+        instructions: 'Enter your Avalara account ID here. It will be a ten-digit number (e.g. 1100012345).',
+        id:           'accountId',
+        name:         'accountId',
+        value:        settings['accountId'],
+        warning:      configWarning('accountId'),
+        readonly:     configDisabled('accountId'),
+        errors:       settings.getErrors('accountId')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'License Key',
+        instructions: 'Enter your license key here. It will be a 16-character string (e.g. 1A2B3C4D5E6F7G8H).',
+        id:           'licenseKey',
+        name:         'licenseKey',
+        value:        settings['licenseKey'],
+        warning:      configWarning('licenseKey'),
+        readonly:     configDisabled('licenseKey'),
+        errors:       settings.getErrors('licenseKey')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Company Code',
+        instructions: 'Enter your [company code](https://help.avalara.com/004_AvaTax_Integrations/002_All_About_Company_Codes) here.',
+        id:           'companyCode',
+        name:         'companyCode',
+        value:        settings['companyCode'],
+        warning:      configWarning('companyCode'),
+        readonly:     configDisabled('companyCode'),
+        errors:       settings.getErrors('companyCode')
+        })
+    }}
+
+    <hr>
+
+    <h2>Sandbox Account</h2>
+
+    {{ forms.textField({
+        label:        'Account ID',
+        instructions: 'Enter your Avalara account ID here.',
+        id:           'sandboxAccountId',
+        name:         'sandboxAccountId',
+        value:        settings['sandboxAccountId'],
+        warning:      configWarning('sandboxAccountId'),
+        readonly:     configDisabled('sandboxAccountId'),
+        errors:       settings.getErrors('sandboxAccountId')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'License Key',
+        instructions: 'Enter your license key here.',
+        id:           'sandboxLicenseKey',
+        name:         'sandboxLicenseKey',
+        value:        settings['sandboxLicenseKey'],
+        warning:      configWarning('sandboxLicenseKey'),
+        readonly:     configDisabled('sandboxLicenseKey'),
+        errors:       settings.getErrors('sandboxLicenseKey')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Company Code',
+        instructions: 'Enter your company code here.',
+        id:           'sandboxCompanyCode',
+        name:         'sandboxCompanyCode',
+        value:        settings['sandboxCompanyCode'],
+        warning:      configWarning('sandboxCompanyCode'),
+        readonly:     configDisabled('sandboxCompanyCode'),
+        errors:       settings.getErrors('sandboxCompanyCode')
+        })
+    }}
+
+    <hr>
+
+    <h2>Origin Ship From Address</h2>
+	
+	
+    {% if (configDisabled('shipFromName') or configDisabled('shipFromZipCode')) %}
+        <div class="field">
+            <p class="warning">Origin Ship From Address is being overridden by the shipFrom config setting in your `avataxtax.php` config file.</p>
+        </div>
+    {% endif %}
+    
+
+    {{ forms.textField({
+        label:        'Name',
+        instructions: '',
+        id:           'shipFromName',
+        name:         'shipFromName',
+        value:        settings.shipFromName,
+        required:     true,
+        readonly:     configDisabled('shipFromName'),
+        errors:       settings.getErrors('shipFromName')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Street 1',
+        instructions: '',
+        id:           'shipFromStreet1',
+        name:         'shipFromStreet1',
+        value:        settings.shipFromStreet1,
+        required:     true,
+        readonly:     configDisabled('shipFromStreet1'),
+        errors:       settings.getErrors('shipFromStreet1')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Street 2',
+        instructions: '',
+        id:           'shipFromStreet2',
+        name:         'shipFromStreet2',
+        value:        settings.shipFromStreet2,
+        readonly:     configDisabled('shipFromStreet2'),
+        errors:       settings.getErrors('shipFromStreet2')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Street 3',
+        instructions: '',
+        id:           'shipFromStreet3',
+        name:         'shipFromStreet3',
+        value:        settings.shipFromStreet3,
+        readonly:     configDisabled('shipFromStreet3'),
+        errors:       settings.getErrors('shipFromStreet3')
+        })
+    }}
+
+    <div class="grid" data-cols="2" data-mode="pct">
+        <div class="item nested-fields" data-colspan="1">
+            {{ forms.textField({
+                label: 'City',
+                instructions: '',
+                id:           'shipFromCity',
+                name:         'shipFromCity',
+                value:        settings.shipFromCity,
+                required:     true,
+                readonly:     configDisabled('shipFromCity'),
+                errors:       settings.getErrors('shipFromCity')
+                })
+            }}
+        </div>
+        <div class="item nested-fields" data-colspan="1">
+            {{ forms.textField({
+                label:        'State',
+                instructions: '',
+                id:           'shipFromState',
+                name:         'shipFromState',
+                value:        settings.shipFromState,
+                required:     true,
+                readonly:     configDisabled('shipFromState'),
+                errors:       settings.getErrors('shipFromState')
+                })
+            }} 
+        </div>
+    </div>
+
+    <div class="grid" data-cols="2" data-mode="pct">
+        <div class="item nested-fields" data-colspan="1">
+            {{ forms.textField({
+                label:        'Country',
+                instructions: '',
+                id:           'shipFromCountry',
+                name:         'shipFromCountry',
+                value:        settings.shipFromCountry,
+                required:     true,
+                readonly:     configDisabled('shipFromCountry'),
+                errors:       settings.getErrors('shipFromCountry')
+                })
+            }}
+        </div>
+        <div class="item nested-fields" data-colspan="1">
+            {{ forms.textField({
+                label:        'Zip Code',
+                instructions: '',
+                id:           'shipFromZipCode',
+                name:         'shipFromZipCode',
+                value:        settings.shipFromZipCode,
+                required:     true,
+                readonly:     configDisabled('shipFromZipCode'),
+                errors:       settings.getErrors('shipFromZipCode')
+                })
+            }}          
+        </div>
+    </div>
+
+    {% if (configDisabled('shipFromName') or configDisabled('shipFromZipCode')) %}
+        <div class="field">
+            <p class="warning">Origin Ship From Address is being overridden by the shipFrom config setting in your `avataxtax.php` config file.</p>
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <h2>Default Tax Codes</h2>
+    
+    {{ forms.textField({
+        label:        'Default Tax Code',
+        instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Products.',
+        id:           'defaultTaxCode',
+        name:         'defaultTaxCode',
+        value:        settings.defaultTaxCode,
+        required:     true,
+        readonly:     configDisabled('defaultTaxCode'),
+        warning:      configWarning('defaultTaxCode'),
+        errors:       settings.getErrors('defaultTaxCode')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Default Shipping Code',
+        instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Shipping.',
+        id:           'defaultShippingCode',
+        name:         'defaultShippingCode',
+        value:        settings.defaultShippingCode,
+        required:     true,
+        readonly:     configDisabled('defaultShippingCode'),
+        warning:      configWarning('defaultShippingCode'),
+        errors:       settings.getErrors('defaultShippingCode')
+        })
+    }}
+
+    {{ forms.textField({
+        label:        'Default Discount Code',
+        instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Discounts.',
+        id:           'defaultDiscountCode',
+        name:         'defaultDiscountCode',
+        value:        settings.defaultDiscountCode,
+        required:     true,
+        readonly:     configDisabled('defaultDiscountCode'),
+        warning:      configWarning('defaultDiscountCode'),
+        errors:       settings.getErrors('defaultDiscountCode')
+        })
+    }}
+
+    <hr>
+
+    <h2>AvaTax Options</h2>
+    
+    <div class="field">
+        <div class="heading">
+            <label for="settings-enableTaxCalculation">Tax Calculation Enabled</label>
+            <div class="instructions">
+                <p class="light">Disable this setting to disable tax calculations.</p>
+            </div>
+        </div>
+
+        {{ forms.lightswitch({
+            id:       'enableTaxCalculation',
+            name:     'enableTaxCalculation',
+            on:       settings['enableTaxCalculation'],
+            readonly: configDisabled('enableTaxCalculation'),
+            errors:   settings.getErrors('enableTaxCalculation')
+            })
+        }}
+
+        {% if configDisabled('enableTaxCalculation') %}
+            <p class="warning">{{ configWarning('enableTaxCalculation') }}</p>
+        {% endif %}
+    </div>
+
+    <div class="field">
+        <div class="heading">
+            <label for="settings-enableCommitting">Comitting Enabled</label>
+            <div class="instructions">
+                <p class="light">Disable this setting to disable document committing.<br>Read-only Tax calculations will still be performed if enabled, but no transactions will be committed.</p>
+            </div>
+        </div>
+
+        {{ forms.lightswitch({
+            id:       'enableCommitting',
+            name:     'enableCommitting',
+            on:       settings['enableCommitting'],
+            readonly: configDisabled('enableCommitting'),
+            errors:   settings.getErrors('enableCommitting')
+            })
+        }}
+
+        {% if configDisabled('enableCommitting') %}
+            <p class="warning">{{ configWarning('enableCommitting') }}</p>
+        {% endif %}
+    </div>
+
+    <div class="field">
+        <div class="heading">
+            <label for="settings-enableTaxCalculation">Address Validation Enabled</label>
+            <div class="instructions">
+                <p class="light">Disable this setting to disable AvaTax address validation.</p>
+            </div>
+        </div>
+
+        {{ forms.lightswitch({
+            id:       'enableAddressValidation',
+            name:     'enableAddressValidation',
+            on:       settings['enableAddressValidation'],
+            readonly: configDisabled('enableAddressValidation'),
+            errors:  settings.getErrors('enableAddressValidation')
+            })
+        }}
+        
+         {% if configDisabled('enableAddressValidation') %}
+            <p class="warning">{{ configWarning('enableAddressValidation') }}</p>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    <h2>Debugging</h2>
+
+    <div class="field">
+        <div class="heading">
+            <label for="settings-debug">Debugging Enabled</label>
+            <div class="instructions">
+                <p class="light">By default only errors are logged. Enable full debugging to log all interaction with the AvaTax API.<br>This should only be enabled during development or when troubleshooting a problem.</p>
+            </div>
+        </div>
+
+        {{ forms.lightswitch({
+            id:       'debug',
+            name:     'debug',
+            on:       settings.debug,
+            readonly: configDisabled('debug'),
+            errors:   settings.getErrors('debug')
+            })
+        }}
+
+        {% if configDisabled('debug') %}
+            <p class="warning">{{ configWarning('debug') }}</p>
+        {% endif %}
+    </div>
+
+{% endnamespace %}
+
+{% endblock %}

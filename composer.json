@@ -1,0 +1,53 @@
+{
+    "name": "surprisehighway/craft-avatax",
+    "description": "Calculate and add sales tax to an order's base tax using Avalara's Avatax service.",
+    "type": "craft-plugin",
+    "version": "2.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "avatax"
+    ],
+    "support": {
+        "docs": "https://github.com/surprisehighway/craft-avatax/blob/master/README.md",
+        "issues": "https://github.com/surprisehighway/craft-avatax/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Surprise Highway",
+            "homepage": "http://surprisehighway.com"
+        }
+    ],
+    "require": {
+        "craftcms/commerce": "^2.0",
+        "craftcms/cms": "^3.1.0",
+        "avalara/avataxclient": "^19.1"
+    },
+    "autoload": {
+        "psr-4": {
+          "surprisehighway\\avatax\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Avatax",
+        "handle": "avatax",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/surprisehighway/craft-avatax/master/CHANGELOG.md",
+        "components": {
+            "salesTaxService": "surprisehighway\\avatax\\services\\SalesTaxService"
+        },
+        "class": "surprisehighway\\avatax\\Avatax"
+    },
+      "minimum-stability": "dev",
+      "prefer-stable": true,
+      "repositories": [
+        {
+          "type": "path",
+          "url": "../Repos/craft-avatax"
+        }
+      ]
+}
