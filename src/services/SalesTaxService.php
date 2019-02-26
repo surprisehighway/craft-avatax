@@ -16,9 +16,11 @@ use Avalara\AvaTaxClient;
 use Craft;
 use craft\base\Component;
 
+use craft\commerce\Plugin as Commerce;
 use craft\commerce\models\Address;
 use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
+use craft\commerce\helpers\Currency;
 
 use yii\base\Exception;
 use yii\log\Logger;
@@ -162,34 +164,53 @@ class SalesTaxService extends Component
     /**
      * @param float $amount amount of the refund
      * @param object Transaction $transaction
-     * @return object
+     * @return boolean
+     *
+     * Handle a return event.
+     *
+     */
+    public function handleRefund($amount, Transaction $transaction)
+    {
+        // catch rounding issues so we can just issue a full refund if possible
+        $paymentCurrency = Commerce::getInstance()->getPaymentCurrencies()->getPaymentCurrencyByIso($transaction->order->paymentCurrency);
+        $refundAmount  = Currency::round($amount, $paymentCurrency);
+        $paymentAmount = Currency::round($transaction->paymentAmount, $paymentCurrency);
+
+        if($refundAmount < $paymentAmount) {
+            return $this->refundPartialTransaction($amount, $transaction);
+        }
+        
+        return $this->refundFullTransaction($amount, $transaction);
+    }
+
+    /**
+     * @param float $amount amount of the refund
+     * @param object Transaction $transaction
+     * @return boolean
      *
      * Refund a committed sales invoice
      * See "Refund Transaction" https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Transactions/RefundTransaction
      *
      */
-    public function refundTransaction($amount, Transaction $transaction)
+    public function refundFullTransaction($amount, Transaction $transaction)
     {
         $client = $this->createClient();
 
+        $order = $transaction->order;
+
         $request = array(
             'companyCode' => $this->getCompanyCode(),
-            'transactionCode' => $this->getTransactionCode($transaction->order)
+            'transactionCode' => $this->getTransactionCode($order)
         );
 
         $model = array(
-            'refundTransactionCode' => $request['transactionCode'].'.1',
+            'refundTransactionCode' => $request['transactionCode'].'-refund',
             'refundType' => \Avalara\RefundType::C_FULL,
             'refundDate' => date('Y-m-d'),
             'referenceCode' => 'Refund from Craft Commerce'
         );
 
         extract($request);
-
-        if($amount !== $transaction->paymentAmount || $transaction->refundableAmount !== $transaction->paymentAmount) {
-            Avatax::error('Transaction Code '.$transactionCode.' could not be refunded. Only one full refund per transaction is currently supported.');
-            return;
-        }
 
         $response = $client->refundTransaction(
             $companyCode, 
@@ -209,12 +230,87 @@ class SalesTaxService extends Component
 
         if(isset($response->status) && $response->status === 'Committed')
         {
-            Avatax::info('Transaction Code '.$transactionCode.' was successfully refunded.');
+            Avatax::info('Transaction Code '.$transactionCode.' was successfully refunded (full).');
 
             return true;
         }
 
         Avatax::error('Transaction Code '.$transactionCode.' could not be refunded.');
+
+        return false;
+    }
+
+    /**
+     * @param float $amount amount of the refund
+     * @param object Transaction $transaction
+     * @return boolean
+     *
+     * Refund a specific amount to a customer by creating and committing a new Return Invoice.
+     * Note that this is not tied to a specific order so tax refund is determined by the customer location and exemption status.
+     * See "Create Transaction" https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Transactions/CreateTransaction/
+     * See https://community.avalara.com/avalara/topics/refund-transaction-api?topic-reply-list[settings][filter_by]=all&topic-reply-list[settings][reply_id]=19097602#reply_19097602
+     */
+    public function refundPartialTransaction($amount, Transaction $transaction)
+    {
+        $order = $transaction->order;
+
+        // if no tax was recorded do not send to Avalara to calculate
+        if( !($order->totalTax > 0)) {
+            return false;
+        }
+
+        $client = $this->createClient();
+
+        $tb = new \Avalara\TransactionBuilder(
+            $client, $this->getCompanyCode(), 
+            \Avalara\DocumentType::C_RETURNINVOICE, 
+            $this->getCustomerCode($order)
+        );
+
+        $tb->withLineItem([
+            ['amount' => -$amount]
+        ])->withTransactionCode(
+            $this->getTransactionCode($order).'-refund'
+        )->withReferenceCode(
+            'Partial refund from Craft Commerce'
+        )->withAddress(
+            'singleLocation',
+            $order->shippingAddress->address1,
+            NULL,
+            NULL,
+            $order->shippingAddress->city,
+            $this->getState($order->shippingAddress),
+            $order->shippingAddress->zipCode,
+            $order->shippingAddress->getCountry()->iso
+        )->withCommit();
+
+        // add entity/use code if set for the customer
+        if(!is_null($order->customer->user))
+        {
+            if(isset($order->customer->user->avataxCustomerUsageType) 
+            && !empty($order->customer->user->avataxCustomerUsageType->value))
+            {
+                $tb = $tb->withEntityUseCode($order->customer->user->avataxCustomerUsageType->value);
+            }
+        }
+
+        $response = $tb->create();
+
+        if($this->debug)
+        {
+            // workaround to save the model as array for debug logging
+            $m = $tb; $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
+            Avatax::info('\Avalara\TransactionBuilder->create(): ', ['request' =>json_encode($model), 'response' => json_encode($response)]);
+        }
+
+        if(isset($response->status) && $response->status === 'Committed')
+        {
+            Avatax::info('Transaction Code '.$this->getTransactionCode($order).' was successfully refunded (partial).');
+
+            return true;
+        }
+
+        Avatax::error('Transaction Code '.$this->getTransactionCode($order).' could not be refunded.');
 
         return false;
     }
@@ -254,7 +350,7 @@ class SalesTaxService extends Component
                 'line2' => $address->address2,
                 'line3' => '', 
                 'city' => $address->city,
-                'region' => $address->getState() ? $address->getState() ? $address->getState()->abbreviation : $address->getStateText() : '', 
+                'region' => $this->getState($address), 
                 'postalCode' => $address->zipCode,
                 'country' => $address->country->iso, 
                 'textCase' => 'Mixed',
@@ -409,7 +505,7 @@ class SalesTaxService extends Component
                 NULL,
                 NULL,
                 $order->shippingAddress->city,
-                $order->shippingAddress->getState() ? $order->shippingAddress->getState() ? $order->shippingAddress->getState()->abbreviation : $order->shippingAddress->getStateText() : '',
+                $this->getState($order->shippingAddress),
                 $order->shippingAddress->zipCode,
                 $order->shippingAddress->getCountry()->iso
             );
@@ -523,6 +619,14 @@ class SalesTaxService extends Component
         throw new Exception('Request could not be completed');
 
         return false;
+    }
+
+    /**
+     * Resolve the state based on available attributes.
+     */
+    private function getState(Address $address)
+    {
+        return $address->getState() ? $address->getState() ? $address->getState()->abbreviation : $address->getStateText() : '';
     }
 
     /**

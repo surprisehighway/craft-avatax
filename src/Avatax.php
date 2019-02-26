@@ -190,7 +190,7 @@ class Avatax extends Plugin
 
         if($transaction->status == 'success')
         {
-            $this->SalesTaxService->refundTransaction($amount, $transaction);
+            $this->SalesTaxService->handleRefund($amount, $transaction);
         }
     }
 
