@@ -563,10 +563,10 @@ class SalesTaxService extends Component
         $shippingTaxCode = $defaultShippingCode ?: 'FR';
 
         $t = $t->withLine(
-            $order->totalShippingCost,  // total amount for the line item
-            1,                          // quantity
-            "FREIGHT",                  // Item Code
-            $shippingTaxCode            // Tax code for freight (Shipping)
+            $order->getAdjustmentsTotalByType('shipping'),  // total amount for the line item
+            1,                                              // quantity
+            "FREIGHT",                                      // Item Code
+            $shippingTaxCode                                // Tax code for freight (Shipping)
         );
 
         // add description to shipping line item
@@ -635,9 +635,9 @@ class SalesTaxService extends Component
     private function getOrderSignature(Order $order)
     {
         $orderNumber = $order->number;
-        $shipping = $order->totalShippingCost;
-        $discount = $order->totalDiscount;
-        $tax = $order->totalTax;
+        $shipping = $order->getAdjustmentsTotalByType('shipping');
+        $discount = $order->getAdjustmentsTotalByType('discount');
+        $tax = $order->getAdjustmentsTotalByType('tax');
         $total = $order->totalPrice;
 
         $address1 = $order->shippingAddress->address1;
