@@ -2,7 +2,9 @@
 
 Calculate and add sales tax to an order's base tax using Avalara's AvaTax service.
 
-This plugin is in beta and bugs may be present. Please document any issues you encounter at our [Github Issues](https://github.com/surprisehighway/craft-avatax/issues) page.
+<a href="https://help.avalara.com/001_Avalara_AvaTax/Find_Your_Home_Page/CraftCommerce_by_Surprise_Highway">
+	<img src="resources/img/plugin-logo.png" alt="Avalara Certified">
+</a>
 
 ## Requirements
 
