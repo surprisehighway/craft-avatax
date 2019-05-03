@@ -173,7 +173,9 @@ class Avatax extends Plugin
         // @var AddressEvent $address
         $address = $event->address;
 
-        $this->SalesTaxService->validateAddress($address);
+        if(Craft::$app->getRequest()->getIsSiteRequest()) {
+            $this->SalesTaxService->validateAddress($address);
+        }
     }
 
     /**
