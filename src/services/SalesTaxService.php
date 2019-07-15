@@ -638,7 +638,7 @@ class SalesTaxService extends Component
         $shipping = $order->getAdjustmentsTotalByType('shipping');
         $discount = $order->getAdjustmentsTotalByType('discount');
         $tax = $order->getAdjustmentsTotalByType('tax');
-        $total = $order->totalPrice;
+        $total = Currency::round($order->totalPrice);
 
         $address1 = $order->shippingAddress->address1;
         $address2 = $order->shippingAddress->address2;

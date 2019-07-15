@@ -17,7 +17,7 @@ class AvataxTaxAdjuster extends Component implements AdjusterInterface
     {
         $adjustments = [];
 
-        if($order->shippingAddress !== NULL && sizeof($order->getLineItems()) > 0)
+        if($order->shippingAddress !== NULL && $order->shippingMethod != null && sizeof($order->getLineItems()) > 0)
         {
             $taxService = new SalesTaxService;
 
