@@ -287,10 +287,9 @@ class SalesTaxService extends Component
         // add entity/use code if set for the customer
         if(!is_null($order->customer->user))
         {
-            if(isset($order->customer->user->avataxCustomerUsageType) 
-            && !empty($order->customer->user->avataxCustomerUsageType->value))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
             {
-                $tb = $tb->withEntityUseCode($order->customer->user->avataxCustomerUsageType->value);
+                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
@@ -614,10 +613,9 @@ class SalesTaxService extends Component
         // add entity/use code if set for a logged-in User
         if(!is_null($order->customer->user))
         {
-            if(isset($order->customer->user->avataxCustomerUsageType) 
-            && !empty($order->customer->user->avataxCustomerUsageType->value))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
             {
-                $t = $t->withEntityUseCode($order->customer->user->avataxCustomerUsageType->value);
+                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
