@@ -256,7 +256,7 @@ class SalesTaxService extends Component
         $order = $transaction->order;
 
         // if no tax was recorded do not send to Avalara to calculate
-        if( !($order->totalTax > 0)) {
+        if( !($order->getAdjustmentsTotalByType('tax') > 0)) {
             return false;
         }
 
