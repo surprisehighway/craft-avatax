@@ -142,6 +142,16 @@ Craft Commerce supports refunds for completed transactions if the [payment gatew
 
 As of Commerce 2.0 partial refunds can be initiated multiple times from the admin control panel. Triggering a full refund for the exact amount of the original order will issue a new Return Invoice for full amount of the corresponding AvaTax transaction. Be aware that triggering a partial refund will issue a new Return Invoice for the partial amount to the corresponding AvaTax *customer* but is not tied to the original transaction. This is because AvaTax only issues refunds on a transaction in full, for specific line items, or as a percentage.
 
+## Customer Code
+
+By default the plugin will send Avalara the order email address as the customer code. With this "hidden" feature you can optionally override this behavior to use the value saved in a User or Order field with a specific handle. This field is **not**created automatically when you install the plugin, you must manually create it.
+
+#### To set up the field:
+
+1. Create either a User or Order field named "Avatax Customer Number", with the handle `avataxCustomerCode`. The handle must match exactly and is case sensitive.
+
+Note that it is up to you how you save or validate the field value. The plugin will simply use the field value if available, or default to the order email address if the field is empty or does not exist.
+
 
 ## Config Overrides
 
