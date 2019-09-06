@@ -517,7 +517,7 @@ class SalesTaxService extends Component
             // Our product has the avatax tax category specified
             if($lineItem->taxCategory->handle === 'avatax'){
 
-                $taxCode = $defaultTaxCode ?: 'P0000000';
+                $taxCode = $defaultTaxCode;
 
                 if(isset($lineItem->purchasable->product->avataxTaxCode)) {
                     $taxCode = $lineItem->purchasable->product->avataxTaxCode ?: $defaultTaxCode;
@@ -543,26 +543,25 @@ class SalesTaxService extends Component
         }
 
         // Add each discount line item
-        $discountCode = $defaultDiscountCode ?: 'OD010000'; // Discounts/retailer coupons associated w/taxable items only
+        $discountCode = $defaultDiscountCode;
 
         foreach ($order->adjustments as $adjustment) {
             
             /** @var OrderAdjustment $adjustment */
             
             if($adjustment->type === 'discount') {
-            
-                // if the discount is for a specific lineItem
-                if ($adjustmentLineItem = $adjustment->getLineItem()) {
-                    
+
+                // if the discount is for a specific lineItem make sure the discountCode 
+                // for this adjustment matches the lineItem tax code
+                if ($adjustmentLineItem = $adjustment->getLineItem())
+                {
+                    $discountCode = $defaultTaxCode;
+
                     // check to see if there is an Avatax Tax Code override specified
-                    if(isset($adjustmentLineItem->purchasable->product->avataxTaxCode)) {
-                        
-                        // if so, use this as the discountCode to make sure the adjustment is applied
-                        // only to lineItems with that same tax code
+                    if(!empty($adjustmentLineItem->purchasable->product->avataxTaxCode))
+                    {
                         $discountCode = $adjustmentLineItem->purchasable->product->avataxTaxCode;
-                        
                     }
-                
                 }
 
                 $t = $t->withLine(
@@ -578,7 +577,7 @@ class SalesTaxService extends Component
         }
 
         // Add shipping cost as line-item
-        $shippingTaxCode = $defaultShippingCode ?: 'FR';
+        $shippingTaxCode = $defaultShippingCode;
 
         $t = $t->withLine(
             $order->getAdjustmentsTotalByType('shipping'),  // total amount for the line item
