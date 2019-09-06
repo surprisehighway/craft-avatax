@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 2.0.4 - 2019-09-06
+### Fixed
+- Fixed deprecation error (pull request [#8](https://github.com/surprisehighway/craft-avatax/pull/8))
+- Discounts for a specific line item now send the line item tax code instead of the default discount code (pull request [#4](https://github.com/surprisehighway/craft-avatax/pull/4))
+
 ## 2.0.3 - 2019-05-03
 ### Fixed
 - Fixed an bug where address validation was being triggered in the control panel when saving a user ([#5](https://github.com/surprisehighway/craft-avatax/issues/5))
