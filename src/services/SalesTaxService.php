@@ -288,10 +288,9 @@ class SalesTaxService extends Component
         // add entity/use code if set for the customer
         if(!is_null($order->customer->user))
         {
-            if(isset($order->customer->user->avataxCustomerUsageType) 
-            && !empty($order->customer->user->avataxCustomerUsageType->value))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
             {
-                $tb = $tb->withEntityUseCode($order->customer->user->avataxCustomerUsageType->value);
+                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
@@ -409,7 +408,46 @@ class SalesTaxService extends Component
      */
     private function getCustomerCode($order)
     {
-        return (!empty($order->email)) ? $order->email : 'GUEST';
+        
+        $customerCode = (!empty($order->email)) ? $order->email : 'GUEST';
+
+        // Override value from a logged-in User field if available
+        if(!is_null($order->customer->user))
+        {
+            if($this->getFieldValue('avataxCustomerCode', $order->customer->user))
+            {
+                $customerCode = $this->getFieldValue('avataxCustomerCode', $order->customer->user);
+            }
+        }
+
+        // Override value from an order field if available
+        if($this->getFieldValue('avataxCustomerCode', $order))
+        {
+            $customerCode = $this->getFieldValue('avataxCustomerCode', $order);
+        }
+
+        return $customerCode;
+    }
+
+    /**
+     * @return string|null
+     *
+     * Check for override value in a plaintext or dropdown field.
+     */
+    private function getFieldValue($handle, $element)
+    {
+        if($element->fieldValues !== null && array_key_exists($handle, $element->fieldValues))
+        {
+            $field = $element->fieldValues[$handle];
+            $value = isset($field->value) ? $field->value : $field;
+
+            if(is_string($value) && !empty($value))
+            {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -592,10 +630,9 @@ class SalesTaxService extends Component
         // add entity/use code if set for a logged-in User
         if(!is_null($order->customer->user))
         {
-            if(isset($order->customer->user->avataxCustomerUsageType) 
-            && !empty($order->customer->user->avataxCustomerUsageType->value))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
             {
-                $t = $t->withEntityUseCode($order->customer->user->avataxCustomerUsageType->value);
+                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
