@@ -154,6 +154,8 @@ You can use Craft's [plugin config file](https://docs.craftcms.com/v3/extend/plu
 
 Some things to do, and ideas for potential features:
 
+* Better exception handling
+* Json endpoint for address validation
 * Config settings for default tax codes at the Product Type level.
 
 ---
