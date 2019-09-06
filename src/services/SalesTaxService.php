@@ -18,6 +18,7 @@ use craft\base\Component;
 
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\models\Address;
+use craft\commerce\models\OrderAdjustment;
 use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
 use craft\commerce\helpers\Currency;
@@ -546,7 +547,24 @@ class SalesTaxService extends Component
 
         foreach ($order->adjustments as $adjustment) {
             
+            /** @var OrderAdjustment $adjustment */
+            
             if($adjustment->type === 'discount') {
+            
+                // if the discount is for a specific lineItem
+                if ($adjustmentLineItem = $adjustment->getLineItem()) {
+                    
+                    // check to see if there is an Avatax Tax Code override specified
+                    if(isset($adjustmentLineItem->purchasable->product->avataxTaxCode)) {
+                        
+                        // if so, use this as the discountCode to make sure the adjustment is applied
+                        // only to lineItems with that same tax code
+                        $discountCode = $adjustmentLineItem->purchasable->product->avataxTaxCode;
+                        
+                    }
+                
+                }
+
                 $t = $t->withLine(
                     $adjustment->amount, // Total amount for the line item
                     1,                   // quantity
