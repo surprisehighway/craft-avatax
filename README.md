@@ -144,7 +144,7 @@ As of Commerce 2.0 partial refunds can be initiated multiple times from the admi
 
 ## Customer Code
 
-By default the plugin will send Avalara the order email address as the customer code. With this "hidden" feature you can optionally override this behavior to use the value saved in a User or Order field with a specific handle. This field is **not**created automatically when you install the plugin, you must manually create it.
+By default the plugin will send Avalara the order email address as the customer code. With this "hidden" feature you can optionally override this behavior to use the value saved in a User or Order field with a specific handle. This field is **not** created automatically when you install the plugin, you must manually create it.
 
 #### To set up the field:
 
