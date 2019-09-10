@@ -12,6 +12,7 @@ namespace surprisehighway\avatax\services;
 
 use surprisehighway\avatax\Avatax;
 use Avalara\AvaTaxClient;
+use Avalara\AddressValidationInfo;
 
 use Craft;
 use craft\base\Component;
@@ -317,7 +318,7 @@ class SalesTaxService extends Component
 
     /**
      * @param object $address Address model craft\commerce\models\Address
-     * @return object
+     * @return boolean
      *
      *  From any other plugin file, call it like this:
      *  Avatax::getInstance()->SalesTaxService->validateAddress()
@@ -326,7 +327,7 @@ class SalesTaxService extends Component
      * See: https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Addresses/ResolveAddressPost/
      *
      */
-    public function validateAddress($address)
+    public function validateAddress(Address $address)
     {
         if(!$this->settings['enableAddressValidation'])
         {
@@ -335,6 +336,26 @@ class SalesTaxService extends Component
             return false;
         }
 
+        $response = $this->getValidateAddress($address);
+
+        if(isset($response->validatedAddresses) || isset($response->coordinates))
+        {
+            return true;
+        }
+
+        // Request failed
+        Avatax::error('Address validation failed.');
+        throw new Exception('Invalid address.');
+
+        return false;
+    }
+
+    /**
+     * @param object $address Avatax Address model Avalara\AvaTaxClient\AddressValidationInfo
+     * @return object
+     */
+    function getValidateAddress(Address $address)
+    {
         $signature = $this->getAddressSignature($address);
         $cacheKey = 'avatax-address-'.$signature;
         $cache = Craft::$app->getCache();
@@ -343,44 +364,35 @@ class SalesTaxService extends Component
         $response = $cache->get($cacheKey);
         //if($response) Avatax::info('Cached address found: '.$cacheKey);
 
-        if(!$response) 
+        if(!$response)
         {
-            $request = array(
-                'line1' => $address->address1,
-                'line2' => $address->address2,
-                'line3' => '', 
-                'city' => $address->city,
-                'region' => $this->getState($address), 
-                'postalCode' => $address->zipCode,
-                'country' => $address->country->iso, 
-                'textCase' => 'Mixed',
-                'latitude' => '',
-                'longitude' => ''
-            );
+            // Convert commerce address to avatax address model
+            $request = new AddressValidationInfo(); 
 
-            extract($request);
+            $request->textCase = 'Mixed';
+            $request->line1 = $address->address1;
+            $request->line2 = $address->address2;
+            $request->line3 = '';
+            $request->city = $address->city;
+            $request->region = $this->getState($address);
+            $request->country = $address->country->iso;
+            $request->postalCode = $address->zipCode;
+            $request->latitude = '';
+            $request->longitude = '';
 
+            // Make avatax api request
             $client = $this->createClient();
 
-            $response = $client->resolveAddress($line1, $line2, $line3, $city, $region, $postalCode, $country, $textCase, $latitude, $longitude);
+            $response = $client->resolveAddress($request->line1, $request->line2, $request->line3, $request->city, $request->region, $request->postalCode, $request->country, $request->textCase, $request->latitude, $request->longitude);
 
             $cache->set($cacheKey, $response);
 
             Avatax::info('\Avalara\AvaTaxClient->resolveAddress():', ['request' => json_encode($request), 'response' => json_encode($response)]);
         }
 
-        if(isset($response->validatedAddresses) || isset($response->coordinates))
-        {
-            return true;
-        }
-
-        Avatax::error('Address validation failed.');
-
-        // Request failed
-        throw new Exception('Invalid address.');
-
-        return false;
+        return $response;
     }
+
 
     // Private Methods
     // =========================================================================
@@ -518,7 +530,10 @@ class SalesTaxService extends Component
         if($this->settings['enableAddressValidation'])
         {
             // Make sure we have a valid address before continuing.
-            $this->validateAddress($order->shippingAddress);
+            if($this->validateAddress($order->shippingAddress) === false)
+            {
+                return false;
+            }
         }
 
         $defaultTaxCode = $this->settings['defaultTaxCode'];
@@ -721,6 +736,7 @@ class SalesTaxService extends Component
         $address1 = $address->address1;
         $address2 = $address->address2;
         $city = $address->city;
+        $state = $this->getState($address);
         $zipCode = $address->zipCode;
         $country = $address->country->iso;
 
