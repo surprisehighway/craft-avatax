@@ -79,7 +79,9 @@ class JsonController extends Controller
 
         $taxService = new SalesTaxService;
 
-        if($response = $taxService->getValidateAddress($address))
+        $response = $taxService->getValidateAddress($address);
+
+        if(!empty($response->validatedAddresses) || isset($response->coordinates))
         {
             return $this->asJson([
                 'success' => true,
@@ -87,10 +89,11 @@ class JsonController extends Controller
             ]);
         } 
         else
-        {
+        {           
             return $this->asJson([
                 'success' => false,
-                'error' => Craft::t('avatax', 'Invalid address.')
+                'error' => Craft::t('avatax', 'Invalid Address.'),
+                'response' => $response,
             ]);
         } 
     }
