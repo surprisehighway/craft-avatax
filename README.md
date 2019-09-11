@@ -160,12 +160,68 @@ You can use Craft's [plugin config file](https://docs.craftcms.com/v3/extend/plu
 1. Copy `config.php` from the `avataxtax` directory to your craft/config folder and rename it to `avatax.php`
 2. Update values in `avatax.php` and save.
 
+## Ajax Examples
+
+There is a JSON controller endpoint you can use for AJAX lookups/validation on the front-end. Currently the only endpoint is for address validation.
+
+#### AJAX Address Validation
+
+You can use an ajax lookup on the front-end to call the AvaTax [Resolve Address API](https://developer.avalara.com/avatax/address-validation/). Note if you implement this on the front-end you may want to disable address validation in the plugin settings to avoid more API calls during the checkout process (the JSON endpoint will still work).
+
+This example uses the default Commerce 2 address form fields and jQuery to perform the AJAX call to give you a starting point, however jQuery is not required and it is up to you to implement as your checkout flow requires.
+
+```
+{% js %}
+
+    $('#address-form').on('submit.addressValidation', function(e) {
+
+        e.preventDefault();
+
+        var $form = $(this);
+
+        var data = {
+            address1   : $('[name="shippingAddress[address1]"]').val(),
+            address2   : $('[name="shippingAddress[address2]"]').val(),
+            city       : $('[name="shippingAddress[city]"]').val(),
+            zipCode    : $('[name="shippingAddress[zipCode]"]').val(),
+            stateValue : $('[name="shippingAddress[stateValue]"]').val(),
+            countryId  : $('[name="shippingAddress[countryId]"]').val()
+        };
+
+        var csrfTokenName  = "{{ craft.app.config.general.csrfTokenName }}";
+        var csrfTokenValue = "{{ craft.app.request.csrfToken }}";
+
+        data[csrfTokenName] = csrfTokenValue;
+
+        $.ajax({
+            type: 'post',
+            url: '/actions/avatax/json/validate-address', 
+            data: data,
+            dataType: 'json'            
+        }).done(function(data){
+
+            console.log(data);
+
+            if(data.success) {
+                // valid address
+                $form.off('submit.addressValidation').submit();
+            } else {
+
+                // handle error here...
+
+                return false;
+            }
+        });
+    });
+
+{% endjs %}
+```
+
 ## AvaTax Plugin Roadmap
 
 Some things to do, and ideas for potential features:
 
 * Better exception handling
-* Json endpoint for address validation
 * Config settings for default tax codes at the Product Type level.
 
 ---

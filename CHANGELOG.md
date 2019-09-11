@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.6 - 2019-09-11
+### Added
+- Added a setting to disable sending partial refunds to AvaTax ([more](https://github.com/surprisehighway/craft-avatax#refunds))
+- Added a json endpoint to use for ajax address validation on the front end  ([more](https://github.com/surprisehighway/craft-avatax#ajax-address-validation))
+
+### Fixed
+- Fixed an issue where additional partial refunds would not be processed after the first because AvaTax requires unique document ids
 
 ## 2.0.5 - 2019-09-06
 ### Added
