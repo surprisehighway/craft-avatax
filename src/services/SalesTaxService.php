@@ -253,6 +253,13 @@ class SalesTaxService extends Component
      */
     public function refundPartialTransaction($amount, Transaction $transaction)
     {
+        if(!$this->settings->enablePartialRefunds)
+        {
+            Avatax::info(__FUNCTION__.'(): Sending partial refunds to AvaTax is disabled.');
+
+            return false;
+        }
+
         $order = $transaction->order;
 
         // if no tax was recorded do not send to Avalara to calculate
@@ -260,6 +267,19 @@ class SalesTaxService extends Component
             return false;
         }
 
+        // check for previous refunds and increment suffix to avoid duplicate ids
+        $count = 0;
+        foreach($transaction->order->getTransactions() as $childTransaction)
+        {
+            if($childTransaction->type === 'refund')
+            {
+                $count++;
+            }
+        }
+
+        $suffix = ($count > 0) ? '-'.$count : '';
+
+        // begin request
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
@@ -271,7 +291,7 @@ class SalesTaxService extends Component
         $tb->withLineItem([
             ['amount' => -$amount]
         ])->withTransactionCode(
-            $this->getTransactionCode($order).'-refund'
+            $this->getTransactionCode($order).'-refund'.$suffix
         )->withReferenceCode(
             'Partial refund from Craft Commerce'
         )->withAddress(
