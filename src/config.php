@@ -61,6 +61,7 @@ return [
     'enableTaxCalculation'    => true,
     'enableCommitting'        => true,
     'enableAddressValidation' => true,
+    'enablePartialRefunds'    => true,
     
     // Enable debugging - true or false
     'debug'                   => true,

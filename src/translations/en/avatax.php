@@ -15,4 +15,5 @@
  */
 return [
     'Avatax plugin loaded' => 'Avatax plugin loaded',
+    'Invalid address.' => 'Invalid address.',
 ];
