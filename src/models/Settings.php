@@ -134,6 +134,11 @@ class Settings extends Model
     /**
      * @var boolean
      */
+    public $enablePartialRefunds = true;
+
+    /**
+     * @var boolean
+     */
     public $debug = false;
 
 
@@ -228,6 +233,7 @@ class Settings extends Model
                     'enableTaxCalculation',
                     'enableCommitting',
                     'enableAddressValidation',
+                    'enablePartialRefunds',
                     'debug',
                 ], 
                 'boolean'

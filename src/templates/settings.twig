@@ -369,6 +369,28 @@
         {% endif %}
     </div>
 
+    <div class="field">
+        <div class="heading">
+            <label for="settings-enablePartialRefunds">Partial Refunds Enabled</label>
+            <div class="instructions">
+                <p class="light">Disable this setting to disable <a href="https://github.com/surprisehighway/craft-avatax#refunds">sending partial refunds to AvaTax</a>.</p>
+            </div>
+        </div>
+
+        {{ forms.lightswitch({
+            id:       'enablePartialRefunds',
+            name:     'enablePartialRefunds',
+            on:       settings['enablePartialRefunds'],
+            readonly: configDisabled('enablePartialRefunds'),
+            errors:  settings.getErrors('enablePartialRefunds')
+            })
+        }}
+        
+         {% if configDisabled('enablePartialRefunds') %}
+            <p class="warning">{{ configWarning('enablePartialRefunds') }}</p>
+        {% endif %}
+    </div>
+
     <hr>
 
     <h2>Debugging</h2>
