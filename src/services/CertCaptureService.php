@@ -103,16 +103,17 @@ class CertCaptureService extends Component
                 ]
             ];
 
-            $response = $client->request('GET', $url, [
-                'auth' => $this->auth
-            ]);
+            $response = $client->request('GET', $url, $options);
             $body = Json::decode((string)$response->getBody());
 
             $result = ['success' => true, 'response' => $body];
         } 
         catch (\Exception $e) 
         {
-           $result = ['success' => false, 'error' => $e->getMessage()];
+            $body = Json::decode((string)$e->getResponse()->getBody());
+            $error = $body['error'] ?? $e->getMessage();
+
+            $result = ['success' => false, 'error' => $error];
         }
 
         return $result;
