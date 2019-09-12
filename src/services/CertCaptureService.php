@@ -85,6 +85,11 @@ class CertCaptureService extends Component
             return ['success' => false, 'error' => 'Customer Number is required.'];
         }
 
+        if(!$this->auth[0] || !$this->auth[1] || !$this->clientId)
+        {
+            return ['success' => false, 'error' => 'Invalid CertCapture credentials.'];
+        }
+
         $url = 'customers/' . urlencode($customerNumber);
 
         try {
