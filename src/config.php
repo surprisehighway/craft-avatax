@@ -24,14 +24,14 @@
 
 return [
    	// The address you will be posting from.
-	'shipFromName'    => '',
-	'shipFromStreet1' => '',
+	'shipFromName'    => 'John Doe',
+	'shipFromStreet1' => '201 E Randolph St',
 	'shipFromStreet2' => '',
 	'shipFromStreet3' => '',
-	'shipFromCity'    => '',
-	'shipFromState'   => '',
-	'shipFromZipCode' => '',
-	'shipFromCountry' => '',
+	'shipFromCity'    => 'Chicago',
+	'shipFromState'   => 'IL',
+	'shipFromZipCode' => '60601',
+	'shipFromCountry' => 'US',
 
 	// The default Avalara Tax Code to use for Products.
 	'defaultTaxCode' => 'P0000000',
