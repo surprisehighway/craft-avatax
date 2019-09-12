@@ -90,6 +90,15 @@ class CertCaptureService extends Component
             return ['success' => false, 'error' => 'Invalid CertCapture credentials.'];
         }
 
+        $cacheKey = 'avatax-address-'.md5($customerNumber);
+        $cache = Craft::$app->getCache();
+        $duration = 86400;
+
+        if($cache->exists($cacheKey))
+        {
+            return $cache->get($cacheKey);
+        }
+
         $url = 'customers/' . urlencode($customerNumber);
 
         try {
@@ -115,6 +124,8 @@ class CertCaptureService extends Component
 
             $result = ['success' => false, 'error' => $error];
         }
+
+        $cache->set($cacheKey, $result, $duration);
 
         return $result;
     }
