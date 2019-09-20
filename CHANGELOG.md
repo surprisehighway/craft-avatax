@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.7 - 2019-09-20
+### Added
+- Added a json endpoint to use for ajax CertCapture client lookup on the front end  ([more](https://github.com/surprisehighway/craft-avatax#certcapture-customer-lookup))
+
 ## 2.0.6 - 2019-09-11
 ### Added
 - Added a setting to disable sending partial refunds to AvaTax ([more](https://github.com/surprisehighway/craft-avatax#refunds))

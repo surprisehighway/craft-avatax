@@ -239,7 +239,7 @@ return [
 ];
 ```
 
-This example a potential button click handler that triggers a customer number lookup in CertCapture via an AJAX request to the plugin's JSON endpoint. The plugin will return success and the CertCapture response with customer info if a matching customer is found, or an error if a match is not found. Note that it appears the CertCapture customer number is case sensitive. jQuery is not required and it is up to you to implement as your checkout flow requires.
+This example demonstrates a potential button click handler that triggers a customer number lookup in CertCapture via an AJAX request to the plugin's JSON endpoint. The plugin will return success and the CertCapture response with customer info if a matching customer is found, or an error if a match is not found. Note that it appears the CertCapture customer number is case sensitive. jQuery is not required and it is up to you to implement as your checkout flow requires.
 
 ```
 {% js %}
