@@ -137,6 +137,21 @@ class Settings extends Model
     public $enablePartialRefunds = true;
 
     /**
+     * @var string
+     */
+    public $certCaptureUsername;
+
+    /**
+     * @var string
+     */
+    public $certCapturePassword;
+
+    /**
+     * @var string
+     */
+    public $certCaptureClientId;
+
+    /**
      * @var boolean
      */
     public $debug = false;
