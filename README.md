@@ -162,7 +162,7 @@ You can use Craft's [plugin config file](https://docs.craftcms.com/v3/extend/plu
 
 ## Ajax Examples
 
-There is a JSON controller endpoint you can use for AJAX lookups/validation on the front-end. Currently the only endpoint is for address validation.
+There is a JSON controller endpoint you can use for AJAX lookups/validation on the front-end. Currently the only endpoints are for address validation and [CertCapture](https://certcapture6xrest.docs.apiary.io) customer lookup by customer number.
 
 #### AJAX Address Validation
 
