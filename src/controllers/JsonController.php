@@ -12,6 +12,7 @@ namespace surprisehighway\avatax\controllers;
 
 use surprisehighway\avatax\Avatax;
 use surprisehighway\avatax\services\SalesTaxService;
+use surprisehighway\avatax\services\CertCaptureService;
 
 use Craft;
 use craft\web\Controller;
@@ -96,5 +97,22 @@ class JsonController extends Controller
                 'response' => $response,
             ]);
         } 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionCertCaptureCustomer()
+    {
+        $this->requireAcceptsJson();
+        $this->requirePostRequest();
+
+        $customerNumber = Craft::$app->getRequest()->getParam('number');
+
+        $certCaptureService = new CertCaptureService();
+
+        $response = $certCaptureService->getCustomer($customerNumber);
+
+        return $this->asJson($response);
     }
 }

@@ -217,6 +217,68 @@ This example uses the default Commerce 2 address form fields and jQuery to perfo
 {% endjs %}
 ```
 
+#### CertCapture Customer Lookup
+
+An example use case for passing along a custom [Customer Code](https://github.com/surprisehighway/craft-avatax/tree/dev-certcapture#customer-code) to AvaTax is that if a matching customer is found in a connected [CertCapture](https://www.avalara.com/us/en/products/sales-and-use-tax/certcapture.html) account any tax-exemptions based on certificates for that customer are automatically applied in AvaTax.
+
+In this case you may want to validate a customer number field to see if a matching customer is found in CertCapture before passing it along to AvaTax.
+
+Before using this API you'll need to add your CertCapture credentials to your  `config/avatax.php` file.
+
+```
+<?php
+
+return [
+
+    // ... other settings ...
+
+    'certCaptureUsername' => 'username',
+    'certCapturePassword' => 'password',
+    'certCaptureClientId' => '123456',
+
+];
+```
+
+This example a potential button click handler that triggers a customer number lookup in CertCapture via an AJAX request to the plugin's JSON endpoint. The plugin will return success and the CertCapture response with customer info if a matching customer is found, or an error if a match is not found. Note that it appears the CertCapture customer number is case sensitive. jQuery is not required and it is up to you to implement as your checkout flow requires.
+
+```
+{% js %}
+    
+    $('button.validate-customer').on('click', function(e) {
+
+        e.preventDefault();
+
+        var data = { number: $('[name="fields[avataxCustomerCode]"]').val() };
+
+        var csrfTokenName  = "{{ craft.app.config.general.csrfTokenName }}";
+        var csrfTokenValue = "{{ craft.app.request.csrfToken }}";
+
+        data[csrfTokenName] = csrfTokenValue;
+
+        $.ajax({
+            type: 'post',
+            url: '/actions/avatax/json/cert-capture-customer', 
+            data: data,
+            dataType: 'json'            
+        }).done(function(data){
+
+            console.log(data);
+
+            if(data.success) {
+
+                // customer found, show valid state or submit form...
+
+            } else {
+
+                // invalid customer number, handle error here...
+            }
+        });
+    });
+
+{% endjs %}
+
+```
+
 ## AvaTax Plugin Roadmap
 
 Some things to do, and ideas for potential features:
