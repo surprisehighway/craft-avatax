@@ -1,5 +1,5 @@
 {
-    "name": "abryrath/craft-avatax",
+    "name": "surprisehighway/craft-avatax",
     "description": "Calculate and add sales tax to an order's base tax using Avalara's Avatax service.",
     "type": "craft-plugin",
     "keywords": [
@@ -18,10 +18,6 @@
         {
             "name": "Surprise Highway",
             "homepage": "http://surprisehighway.com"
-        },
-        {
-            "name": "Abry Rath",
-            "homepage": "https://github.com/abryrath"
         }
     ],
     "require": {
@@ -37,7 +33,7 @@
     ],
     "autoload": {
         "psr-4": {
-          "abryrath\\avatax\\": "src/"
+          "surprisehighway\\avatax\\": "src/"
         }
     },
     "extra": {
@@ -46,10 +42,10 @@
         "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/surprisehighway/craft-avatax/master/CHANGELOG.md",
-        "class": "abryrath\\avatax\\Avatax",
+        "class": "surprisehighway\\avatax\\Avatax",
         "components": {
-            "salesTaxService": "abryrath\\avatax\\services\\SalesTaxService",
-            "logService": "abryrath\\avatax\\services\\LogService"
+            "salesTaxService": "surprisehighway\\avatax\\services\\SalesTaxService",
+            "logService": "surprisehighway\\avatax\\services\\LogService"
         }
     }
 }

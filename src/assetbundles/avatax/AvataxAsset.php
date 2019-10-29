@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace abryrath\avatax\assetbundles\avatax;
+namespace surprisehighway\avatax\assetbundles\avatax;
 
 use Craft;
 use craft\web\AssetBundle;

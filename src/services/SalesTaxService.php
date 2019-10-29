@@ -9,9 +9,9 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace abryrath\avatax\services;
+namespace surprisehighway\avatax\services;
 
-use abryrath\avatax\Avatax;
+use surprisehighway\avatax\Avatax;
 use Avalara\AvaTaxClient;
 use Avalara\AddressValidationInfo;
 
