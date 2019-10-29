@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -8,7 +9,7 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax\assetbundles\Avatax;
+namespace surprisehighway\avatax\assetbundles\avatax;
 
 use Craft;
 use craft\web\AssetBundle;

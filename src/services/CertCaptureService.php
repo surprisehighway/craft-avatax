@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -42,13 +43,13 @@ class CertCaptureService extends Component
     public $url = 'https://api.certcapture.com/v2/';
 
     /**
-    * @var auth
-    */
+     * @var auth
+     */
     public $auth = [];
 
     /**
-    * @var clientId
-    */
+     * @var clientId
+     */
     public $clientId;
 
 
@@ -67,7 +68,7 @@ class CertCaptureService extends Component
         $this->settings = $settings;
 
         $this->auth = [
-            $settings['certCaptureUsername'], 
+            $settings['certCaptureUsername'],
             $settings['certCapturePassword']
         ];
 
@@ -80,22 +81,19 @@ class CertCaptureService extends Component
      */
     public function getCustomer($customerNumber)
     {
-        if(!$customerNumber)
-        {
+        if (!$customerNumber) {
             return ['success' => false, 'error' => 'Customer Number is required.'];
         }
 
-        if(!$this->auth[0] || !$this->auth[1] || !$this->clientId)
-        {
+        if (!$this->auth[0] || !$this->auth[1] || !$this->clientId) {
             return ['success' => false, 'error' => 'Invalid CertCapture credentials.'];
         }
 
-        $cacheKey = 'avatax-address-'.md5($customerNumber);
+        $cacheKey = 'avatax-address-' . md5($customerNumber);
         $cache = Craft::$app->getCache();
         $duration = 86400;
 
-        if($cache->exists($cacheKey))
-        {
+        if ($cache->exists($cacheKey)) {
             return $cache->get($cacheKey);
         }
 
@@ -113,13 +111,11 @@ class CertCaptureService extends Component
             ];
 
             $response = $client->request('GET', $url, $options);
-            $body = Json::decode((string)$response->getBody());
+            $body = Json::decode((string) $response->getBody());
 
             $result = ['success' => true, 'response' => $body];
-        } 
-        catch (\Exception $e) 
-        {
-            $body = Json::decode((string)$e->getResponse()->getBody());
+        } catch (\Exception $e) {
+            $body = Json::decode((string) $e->getResponse()->getBody());
             $error = $body['error'] ?? $e->getMessage();
 
             $result = ['success' => false, 'error' => $error];
@@ -138,5 +134,4 @@ class CertCaptureService extends Component
 
         return Craft::createGuzzleClient($options);
     }
-
 }

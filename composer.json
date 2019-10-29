@@ -2,7 +2,6 @@
     "name": "surprisehighway/craft-avatax",
     "description": "Calculate and add sales tax to an order's base tax using Avalara's Avatax service.",
     "type": "craft-plugin",
-    "version": "2.0.7",
     "keywords": [
         "craft",
         "cms",

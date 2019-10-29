@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -67,7 +68,7 @@ class SalesTaxService extends Component
         $settings = Avatax::$plugin->getSettings();
 
         $this->settings = $settings;
-        $this->debug = $settings->debug;
+        $this->debug = $settings->getDebug();
     }
 
     /**
@@ -102,9 +103,8 @@ class SalesTaxService extends Component
      */
     public function createSalesOrder(Order $order)
     {
-        if(!$this->settings->enableTaxCalculation)
-        {
-            Avatax::info(__FUNCTION__.'(): Tax Calculation is disabled.');
+        if (!$this->getSettings->enableTaxCalculation()) {
+            Avatax::info(__FUNCTION__ . '(): Tax Calculation is disabled.');
 
             return false;
         }
@@ -114,8 +114,9 @@ class SalesTaxService extends Component
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_SALESORDER, 
+            $client,
+            $this->getCompanyCode(),
+            \Avalara\DocumentType::C_SALESORDER,
             $this->getCustomerCode($order)
         );
 
@@ -138,11 +139,8 @@ class SalesTaxService extends Component
      */
     public function createSalesInvoice(Order $order)
     {
-        if(!$this->settings->enableCommitting)
-        {
-
-            Avatax::info(__FUNCTION__.'(): Document Committing is disabled.');
-
+        if (!$this->settings->getEnableCommitting()) {
+            Avatax::info(__FUNCTION__ . '(): Document Committing is disabled.');
             return false;
         }
 
@@ -151,8 +149,9 @@ class SalesTaxService extends Component
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_SALESINVOICE, 
+            $client,
+            $this->getCompanyCode(),
+            \Avalara\DocumentType::C_SALESINVOICE,
             $this->getCustomerCode($order)
         );
 
@@ -178,10 +177,10 @@ class SalesTaxService extends Component
         $refundAmount  = Currency::round($amount, $paymentCurrency);
         $paymentAmount = Currency::round($transaction->paymentAmount, $paymentCurrency);
 
-        if($refundAmount < $paymentAmount) {
+        if ($refundAmount < $paymentAmount) {
             return $this->refundPartialTransaction($amount, $transaction);
         }
-        
+
         return $this->refundFullTransaction($amount, $transaction);
     }
 
@@ -206,7 +205,7 @@ class SalesTaxService extends Component
         );
 
         $model = array(
-            'refundTransactionCode' => $request['transactionCode'].'-refund',
+            'refundTransactionCode' => $request['transactionCode'] . '-refund',
             'refundType' => \Avalara\RefundType::C_FULL,
             'refundDate' => date('Y-m-d'),
             'referenceCode' => 'Refund from Craft Commerce'
@@ -215,29 +214,27 @@ class SalesTaxService extends Component
         extract($request);
 
         $response = $client->refundTransaction(
-            $companyCode, 
-            $transactionCode, 
-            null, 
-            null, 
-            'true', 
+            $companyCode,
+            $transactionCode,
+            null,
+            null,
+            'true',
             $model
         );
 
-        if($this->debug)
-        {
+        if ($this->debug) {
             $request = array_merge($request, $model);
 
-            Avatax::info('\Avalara\Client->refundTransaction(): ', ['request' =>json_encode($request), 'response' => json_encode($response)]);
+            Avatax::info('\Avalara\Client->refundTransaction(): ', ['request' => json_encode($request), 'response' => json_encode($response)]);
         }
 
-        if(isset($response->status) && $response->status === 'Committed')
-        {
-            Avatax::info('Transaction Code '.$transactionCode.' was successfully refunded (full).');
+        if (isset($response->status) && $response->status === 'Committed') {
+            Avatax::info('Transaction Code ' . $transactionCode . ' was successfully refunded (full).');
 
             return true;
         }
 
-        Avatax::error('Transaction Code '.$transactionCode.' could not be refunded.');
+        Avatax::error('Transaction Code ' . $transactionCode . ' could not be refunded.');
 
         return false;
     }
@@ -254,9 +251,8 @@ class SalesTaxService extends Component
      */
     public function refundPartialTransaction($amount, Transaction $transaction)
     {
-        if(!$this->settings->enablePartialRefunds)
-        {
-            Avatax::info(__FUNCTION__.'(): Sending partial refunds to AvaTax is disabled.');
+        if (!$this->settings->getEnablePartialRefunds()) {
+            Avatax::info(__FUNCTION__ . '(): Sending partial refunds to AvaTax is disabled.');
 
             return false;
         }
@@ -264,35 +260,34 @@ class SalesTaxService extends Component
         $order = $transaction->order;
 
         // if no tax was recorded do not send to Avalara to calculate
-        if( !($order->getAdjustmentsTotalByType('tax') > 0)) {
+        if (!($order->getAdjustmentsTotalByType('tax') > 0)) {
             return false;
         }
 
         // check for previous refunds and increment suffix to avoid duplicate ids
         $count = 0;
-        foreach($transaction->order->getTransactions() as $childTransaction)
-        {
-            if($childTransaction->type === 'refund')
-            {
+        foreach ($transaction->order->getTransactions() as $childTransaction) {
+            if ($childTransaction->type === 'refund') {
                 $count++;
             }
         }
 
-        $suffix = ($count > 0) ? '-'.$count : '';
+        $suffix = ($count > 0) ? '-' . $count : '';
 
         // begin request
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_RETURNINVOICE, 
+            $client,
+            $this->getCompanyCode(),
+            \Avalara\DocumentType::C_RETURNINVOICE,
             $this->getCustomerCode($order)
         );
 
         $tb->withLineItem([
             ['amount' => -$amount]
         ])->withTransactionCode(
-            $this->getTransactionCode($order).'-refund'.$suffix
+            $this->getTransactionCode($order) . '-refund' . $suffix
         )->withReferenceCode(
             'Partial refund from Craft Commerce'
         )->withAddress(
@@ -307,31 +302,28 @@ class SalesTaxService extends Component
         )->withCommit();
 
         // add entity/use code if set for the customer
-        if(!is_null($order->customer->user))
-        {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
-            {
+        if (!is_null($order->customer->user)) {
+            if ($this->getFieldValue('avataxCustomerUsageType', $order->customer->user)) {
                 $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
         $response = $tb->create();
 
-        if($this->debug)
-        {
+        if ($this->debug) {
             // workaround to save the model as array for debug logging
-            $m = $tb; $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
-            Avatax::info('\Avalara\TransactionBuilder->create(): ', ['request' =>json_encode($model), 'response' => json_encode($response)]);
+            $m = $tb;
+            $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
+            Avatax::info('\Avalara\TransactionBuilder->create(): ', ['request' => json_encode($model), 'response' => json_encode($response)]);
         }
 
-        if(isset($response->status) && $response->status === 'Committed')
-        {
-            Avatax::info('Transaction Code '.$this->getTransactionCode($order).' was successfully refunded (partial).');
+        if (isset($response->status) && $response->status === 'Committed') {
+            Avatax::info('Transaction Code ' . $this->getTransactionCode($order) . ' was successfully refunded (partial).');
 
             return true;
         }
 
-        Avatax::error('Transaction Code '.$this->getTransactionCode($order).' could not be refunded.');
+        Avatax::error('Transaction Code ' . $this->getTransactionCode($order) . ' could not be refunded.');
 
         return false;
     }
@@ -349,17 +341,15 @@ class SalesTaxService extends Component
      */
     public function validateAddress(Address $address)
     {
-        if(!$this->settings['enableAddressValidation'])
-        {
-            Avatax::info(__FUNCTION__.'(): Address validation is disabled.');
+        if (!$this->settings['enableAddressValidation']) {
+            Avatax::info(__FUNCTION__ . '(): Address validation is disabled.');
 
             return false;
         }
 
         $response = $this->getValidateAddress($address);
 
-        if(!empty($response->validatedAddresses) || isset($response->coordinates))
-        {
+        if (!empty($response->validatedAddresses) || isset($response->coordinates)) {
             return true;
         }
 
@@ -377,17 +367,16 @@ class SalesTaxService extends Component
     function getValidateAddress(Address $address)
     {
         $signature = $this->getAddressSignature($address);
-        $cacheKey = 'avatax-address-'.$signature;
+        $cacheKey = 'avatax-address-' . $signature;
         $cache = Craft::$app->getCache();
 
         // Check if validated address has been cached, if not make api call.
         $response = $cache->get($cacheKey);
         //if($response) Avatax::info('Cached address found: '.$cacheKey);
 
-        if(!$response)
-        {
+        if (!$response) {
             // Convert commerce address to avatax address model
-            $request = new AddressValidationInfo(); 
+            $request = new AddressValidationInfo();
 
             $request->textCase = 'Mixed';
             $request->line1 = $address->address1;
@@ -422,13 +411,11 @@ class SalesTaxService extends Component
      */
     private function getCompanyCode()
     {
-        if($this->settings['environment'] === 'production')
-        {
+        if ($this->settings['environment'] === 'production') {
             $companyCode = $this->settings['companyCode'];
         }
 
-        if($this->settings['environment'] === 'sandbox')
-        {
+        if ($this->settings['environment'] === 'sandbox') {
             $companyCode = $this->settings['sandboxCompanyCode'];
         }
 
@@ -440,21 +427,18 @@ class SalesTaxService extends Component
      */
     private function getCustomerCode($order)
     {
-        
+
         $customerCode = (!empty($order->email)) ? $order->email : 'GUEST';
 
         // Override value from a logged-in User field if available
-        if(!is_null($order->customer->user))
-        {
-            if($this->getFieldValue('avataxCustomerCode', $order->customer->user))
-            {
+        if (!is_null($order->customer->user)) {
+            if ($this->getFieldValue('avataxCustomerCode', $order->customer->user)) {
                 $customerCode = $this->getFieldValue('avataxCustomerCode', $order->customer->user);
             }
         }
 
         // Override value from an order field if available
-        if($this->getFieldValue('avataxCustomerCode', $order))
-        {
+        if ($this->getFieldValue('avataxCustomerCode', $order)) {
             $customerCode = $this->getFieldValue('avataxCustomerCode', $order);
         }
 
@@ -468,13 +452,11 @@ class SalesTaxService extends Component
      */
     private function getFieldValue($handle, $element)
     {
-        if($element->fieldValues !== null && array_key_exists($handle, $element->fieldValues))
-        {
+        if ($element->fieldValues !== null && array_key_exists($handle, $element->fieldValues)) {
             $field = $element->fieldValues[$handle];
             $value = isset($field->value) ? $field->value : $field;
 
-            if(is_string($value) && !empty($value))
-            {
+            if (is_string($value) && !empty($value)) {
                 return $value;
             }
         }
@@ -492,7 +474,7 @@ class SalesTaxService extends Component
     {
         $prefix = 'cr_';
 
-        return $prefix.$order->number;
+        return $prefix . $order->number;
     }
 
     /**
@@ -502,31 +484,27 @@ class SalesTaxService extends Component
     {
         $settings = ($settings) ? $settings : $this->settings;
 
-        $pluginName = 'Craft Commerce '.Avatax::$plugin->name;
+        $pluginName = 'Craft Commerce ' . Avatax::$plugin->name;
         $pluginVersion = Avatax::$plugin->version;
         $machineName = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'localhost';
 
-        if($settings['environment'] === 'production')
-        {
-            if(!empty($settings['accountId']) && !empty($settings['licenseKey']))
-            {
+        if ($settings['environment'] === 'production') {
+            if (!empty($settings['accountId']) && !empty($settings['licenseKey'])) {
                 // Create a new client
                 $client = new AvaTaxClient($pluginName, $pluginVersion, $machineName, 'production');
 
-                $client->withLicenseKey( $settings['accountId'], $settings['licenseKey'] );
+                $client->withLicenseKey($settings['accountId'], $settings['licenseKey']);
 
                 return $client;
             }
         }
 
-        if($settings['environment'] === 'sandbox')
-        {
-            if(!empty($settings['sandboxAccountId']) && !empty($settings['sandboxLicenseKey']))
-            {
+        if ($settings['environment'] === 'sandbox') {
+            if (!empty($settings['sandboxAccountId']) && !empty($settings['sandboxLicenseKey'])) {
                 // Create a new client
                 $client = new AvaTaxClient($pluginName, $pluginVersion, $machineName, 'sandbox');
 
-                $client->withLicenseKey( $settings['sandboxAccountId'], $settings['sandboxLicenseKey'] );
+                $client->withLicenseKey($settings['sandboxAccountId'], $settings['sandboxLicenseKey']);
 
                 return $client;
             }
@@ -547,11 +525,9 @@ class SalesTaxService extends Component
      */
     private function getTotalTax($order, $transaction)
     {
-        if($this->settings['enableAddressValidation'])
-        {
+        if ($this->settings['enableAddressValidation']) {
             // Make sure we have a valid address before continuing.
-            if($this->validateAddress($order->shippingAddress) === false)
-            {
+            if ($this->validateAddress($order->shippingAddress) === false) {
                 return false;
             }
         }
@@ -561,8 +537,8 @@ class SalesTaxService extends Component
         $defaultDiscountCode = $this->settings['defaultDiscountCode'];
 
         $t = $transaction->withTransactionCode(
-                $this->getTransactionCode($order)
-            )
+            $this->getTransactionCode($order)
+        )
             ->withAddress(
                 'shipFrom',
                 $this->settings['shipFromStreet1'],
@@ -586,53 +562,51 @@ class SalesTaxService extends Component
 
         // Add each line item to the transaction
         foreach ($order->lineItems as $lineItem) {
-            
+
             // Our product has the avatax tax category specified
-            if($lineItem->taxCategory->handle === 'avatax'){
+            if ($lineItem->taxCategory->handle === 'avatax') {
 
                 $taxCode = $defaultTaxCode;
 
-                if(isset($lineItem->purchasable->product->avataxTaxCode)) {
+                if (isset($lineItem->purchasable->product->avataxTaxCode)) {
                     $taxCode = $lineItem->purchasable->product->avataxTaxCode ?: $defaultTaxCode;
                 }
 
                 $itemCode = $lineItem->id;
 
-                if(!empty($lineItem->sku)) {
+                if (!empty($lineItem->sku)) {
                     $itemCode = $lineItem->sku;
                 }
 
-               // amount, $quantity, $itemCode, $taxCode)
-               $t = $t->withLine(
+                // amount, $quantity, $itemCode, $taxCode)
+                $t = $t->withLine(
                     $lineItem->subtotal,    // Total amount for the line item
                     $lineItem->qty,         // Quantity
                     $itemCode,              // Item Code
                     $taxCode                // Tax Code - Default or Custom Tax Code.
                 );
 
-               // add human-readable description to line item
-               $t = $t->withLineDescription($lineItem->purchasable->product->title);
-           }
+                // add human-readable description to line item
+                $t = $t->withLineDescription($lineItem->purchasable->product->title);
+            }
         }
 
         // Add each discount line item
         $discountCode = $defaultDiscountCode;
 
         foreach ($order->adjustments as $adjustment) {
-            
+
             /** @var OrderAdjustment $adjustment */
-            
-            if($adjustment->type === 'discount') {
+
+            if ($adjustment->type === 'discount') {
 
                 // if the discount is for a specific lineItem make sure the discountCode 
                 // for this adjustment matches the lineItem tax code
-                if ($adjustmentLineItem = $adjustment->getLineItem())
-                {
+                if ($adjustmentLineItem = $adjustment->getLineItem()) {
                     $discountCode = $defaultTaxCode;
 
                     // check to see if there is an Avatax Tax Code override specified
-                    if(!empty($adjustmentLineItem->purchasable->product->avataxTaxCode))
-                    {
+                    if (!empty($adjustmentLineItem->purchasable->product->avataxTaxCode)) {
                         $discountCode = $adjustmentLineItem->purchasable->product->avataxTaxCode;
                     }
                 }
@@ -663,42 +637,37 @@ class SalesTaxService extends Component
         $t = $t->withLineDescription('Total Shipping Cost');
 
         // add entity/use code if set for a logged-in User
-        if(!is_null($order->customer->user))
-        {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
-            {
+        if (!is_null($order->customer->user)) {
+            if ($this->getFieldValue('avataxCustomerUsageType', $order->customer->user)) {
                 $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
             }
         }
 
-        if($this->debug)
-        {
+        if ($this->debug) {
             // workaround to save the model as array for debug logging
-            $m = $t; $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
+            $m = $t;
+            $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
         }
 
         $signature = $this->getOrderSignature($order);
-        $cacheKey = 'avatax-'.$this->type.'-'.$signature;
+        $cacheKey = 'avatax-' . $this->type . '-' . $signature;
         $cache = Craft::$app->getCache();
 
         // Check if tax request has been cached when not committing, if not make api call.
         $response = $cache->get($cacheKey);
         //if($response) Avatax::info('Cached order found: '.$cacheKey); 
 
-        if(!$response || $this->type === 'invoice') 
-        {
+        if (!$response || $this->type === 'invoice') {
             $response = $t->create();
 
             $cache->set($cacheKey, $response);
 
-            if($this->debug)
-            {
-                Avatax::info('\Avalara\TransactionBuilder->create() '.$this->type.':', ['request' => json_encode($model), 'response' => json_encode($response)]);
+            if ($this->debug) {
+                Avatax::info('\Avalara\TransactionBuilder->create() ' . $this->type . ':', ['request' => json_encode($model), 'response' => json_encode($response)]);
             }
         }
 
-        if(isset($response->totalTax))
-        {
+        if (isset($response->totalTax)) {
             return $response->totalTax;
         }
 
@@ -734,18 +703,17 @@ class SalesTaxService extends Component
         $city = $order->shippingAddress->city;
         $zipCode = $order->shippingAddress->zipCode;
         $country = $order->shippingAddress->country->iso;
-        $address = $address1.$address2.$city.$zipCode.$country;
+        $address = $address1 . $address2 . $city . $zipCode . $country;
 
         $lineItems = '';
-        foreach ($order->lineItems as $lineItem)
-        {
+        foreach ($order->lineItems as $lineItem) {
             $itemCode = $lineItem->id;
             $subtotal = $lineItem->subtotal;
             $qty = $lineItem->qty;
-            $lineItems .= $itemCode.$subtotal.$qty;
+            $lineItems .= $itemCode . $subtotal . $qty;
         }
 
-        return md5($orderNumber.$shipping.$discount.$tax.$total.$lineItems.$address); 
+        return md5($orderNumber . $shipping . $discount . $tax . $total . $lineItems . $address);
     }
 
     /**
@@ -760,6 +728,6 @@ class SalesTaxService extends Component
         $zipCode = $address->zipCode;
         $country = $address->country->iso;
 
-        return md5($address1.$address2.$city.$zipCode.$country); 
+        return md5($address1 . $address2 . $city . $zipCode . $country);
     }
 }

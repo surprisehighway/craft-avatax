@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -26,7 +27,7 @@ use yii\base\Exception;
  */
 class LogService extends Component
 {
-	// Public Properties
+    // Public Properties
     // =========================================================================
 
     /**
@@ -43,74 +44,76 @@ class LogService extends Component
     // Public Methods
     // =========================================================================
 
-	public function init()
+    public function init()
     {
         $this->logFile = Craft::$app->path->getLogPath() . '/avatax.log';
 
         $settings = Avatax::$plugin->getSettings();
-        $this->debug = $settings->debug;
+        $this->debug = $settings->getDebug();
     }
 
     /**
      * @param string $type info or error
-	 * @param string $message
-	 * @param array $data return or response data
-	 * @return void
+     * @param string $message
+     * @param array $data return or response data
+     * @return void
      */
-	public function log($type, $message, $data = []) 
-	{
-		if($type === 'info' && $this->debug === false) {
-			return;
-		}
+    public function log($type, $message, $data = [])
+    {
+        if ($type === 'info' && $this->debug === false) {
+            return;
+        }
 
-		$date = new \DateTime();
+        $date = new \DateTime();
 
-		$log = [
-			'date' => $date->format('Y-m-d H:i:s'),
-			'type' => $type,
-			'message' => $message,
-			'data' => $data,
-		];
+        $log = [
+            'date' => $date->format('Y-m-d H:i:s'),
+            'type' => $type,
+            'message' => $message,
+            'data' => $data,
+        ];
 
-		FileHelper::writeToFile($this->logFile, json_encode($log).PHP_EOL, ['append' => true]);
-	}
+        FileHelper::writeToFile($this->logFile, json_encode($log) . PHP_EOL, ['append' => true]);
+    }
 
-	/**
-	 * @return array
+    /**
+     * @return array
      */
-	public function getLogEntries() {
-		$logEntries = [];
+    public function getLogEntries()
+    {
+        $logEntries = [];
 
-		App::maxPowerCaptain();
+        App::maxPowerCaptain();
 
-		if(@file_exists($this->logFile)) {
-			$contents = @file_get_contents($this->logFile);
-			$lines = explode("\n", $contents);
+        if (@file_exists($this->logFile)) {
+            $contents = @file_get_contents($this->logFile);
+            $lines = explode("\n", $contents);
 
-			foreach ($lines as $line) {
-				$log = json_decode($line, true);
+            foreach ($lines as $line) {
+                $log = json_decode($line, true);
 
-				if($log) {
-					if(isset($log['data']['request'])) {
-						$log['data']['request'] = json_decode($log['data']['request']);
-					}
+                if ($log) {
+                    if (isset($log['data']['request'])) {
+                        $log['data']['request'] = json_decode($log['data']['request']);
+                    }
 
-					if(isset($log['data']['response'])) {
-						$log['data']['response'] = json_decode($log['data']['response']);
-					}
+                    if (isset($log['data']['response'])) {
+                        $log['data']['response'] = json_decode($log['data']['response']);
+                    }
 
-					$logEntries[] = $log;
-				}
-			}
-		}
+                    $logEntries[] = $log;
+                }
+            }
+        }
 
-		return array_reverse($logEntries);
-	}
+        return array_reverse($logEntries);
+    }
 
-	/**
-	 * @return void
+    /**
+     * @return void
      */
-	public function clearLogs() {
-		FileHelper::unlink($this->logFile);
-	}
+    public function clearLogs()
+    {
+        FileHelper::unlink($this->logFile);
+    }
 }

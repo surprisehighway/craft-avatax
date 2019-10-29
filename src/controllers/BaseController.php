@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -47,5 +48,4 @@ class BaseController extends Controller
             'settings' => $settings,
         ]);
     }
-
 }
