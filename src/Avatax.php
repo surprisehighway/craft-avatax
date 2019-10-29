@@ -9,12 +9,12 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax;
+namespace abryrath\avatax;
 
-use surprisehighway\avatax\adjusters\AvataxTaxAdjuster;
-use surprisehighway\avatax\models\Settings;
-use surprisehighway\avatax\services\SalesTaxService;
-use surprisehighway\avatax\services\LogService;
+use abryrath\avatax\adjusters\AvataxTaxAdjuster;
+use abryrath\avatax\models\Settings;
+use abryrath\avatax\services\SalesTaxService;
+use abryrath\avatax\services\LogService;
 
 use Craft;
 use craft\base\Plugin;

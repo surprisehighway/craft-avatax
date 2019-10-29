@@ -9,11 +9,11 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax\controllers;
+namespace abryrath\avatax\controllers;
 
-use surprisehighway\avatax\Avatax;
-use surprisehighway\avatax\services\SalesTaxService;
-use surprisehighway\avatax\services\CertCaptureService;
+use abryrath\avatax\Avatax;
+use abryrath\avatax\services\SalesTaxService;
+use abryrath\avatax\services\CertCaptureService;
 
 use Craft;
 use craft\web\Controller;

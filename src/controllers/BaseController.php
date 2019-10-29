@@ -9,9 +9,9 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax\controllers;
+namespace abryrath\avatax\controllers;
 
-use surprisehighway\avatax\Avatax;
+use abryrath\avatax\Avatax;
 
 use Craft;
 use craft\web\Controller;

@@ -8,9 +8,9 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax\models;
+namespace abryrath\avatax\models;
 
-use surprisehighway\avatax\Avatax;
+use abryrath\avatax\Avatax;
 
 use Craft;
 use craft\base\Model;

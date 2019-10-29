@@ -9,9 +9,9 @@
  * @copyright Copyright (c) 2019 Surprise Highway
  */
 
-namespace surprisehighway\avatax\services;
+namespace abryrath\avatax\services;
 
-use surprisehighway\avatax\Avatax;
+use abryrath\avatax\Avatax;
 use Avalara\AvaTaxClient;
 
 use Craft;

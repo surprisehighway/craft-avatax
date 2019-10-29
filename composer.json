@@ -34,7 +34,7 @@
     ],
     "autoload": {
         "psr-4": {
-          "surprisehighway\\avatax\\": "src/"
+          "abryrath\\avatax\\": "src/"
         }
     },
     "extra": {
@@ -43,10 +43,10 @@
         "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/surprisehighway/craft-avatax/master/CHANGELOG.md",
-        "class": "surprisehighway\\avatax\\Avatax",
+        "class": "abryrath\\avatax\\Avatax",
         "components": {
-            "salesTaxService": "surprisehighway\\avatax\\services\\SalesTaxService",
-            "logService": "surprisehighway\\avatax\\services\\LogService"
+            "salesTaxService": "abryrath\\avatax\\services\\SalesTaxService",
+            "logService": "abryrath\\avatax\\services\\LogService"
         }
     }
 }
