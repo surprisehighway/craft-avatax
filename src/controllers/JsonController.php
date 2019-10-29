@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -71,8 +72,7 @@ class JsonController extends Controller
             'stateValue'
         ];
 
-        foreach ($attributes as $attr) 
-        {
+        foreach ($attributes as $attr) {
             $address->$attr = Craft::$app->getRequest()->getParam($attr);
         }
 
@@ -82,21 +82,18 @@ class JsonController extends Controller
 
         $response = $taxService->getValidateAddress($address);
 
-        if(!empty($response->validatedAddresses) || isset($response->coordinates))
-        {
+        if (!empty($response->validatedAddresses) || isset($response->coordinates)) {
             return $this->asJson([
                 'success' => true,
                 'response' => $response
             ]);
-        } 
-        else
-        {           
+        } else {
             return $this->asJson([
                 'success' => false,
                 'error' => Craft::t('avatax', 'Invalid Address.'),
                 'response' => $response,
             ]);
-        } 
+        }
     }
 
     /**
