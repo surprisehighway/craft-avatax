@@ -8,48 +8,64 @@
 
 {% block content %}
 
-{% macro configWarning(setting) -%}
-    {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
-    {%- if configArray[setting] is defined -%}
-        {{- "This is being overridden by the `#{setting}` setting in the `config/avatax.php` file."|raw }}
-    {%- else -%}
-        {{ false }}
-    {%- endif -%}
-{%- endmacro %}
+    {% macro configWarning(setting) -%}
+        {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
+        {%- if configArray[setting] is defined -%}
+            {{- "This is being overridden by the `#{setting}` setting in the `config/avatax.php` file."|raw }}
+        {%- else -%}
+            {{ false }}
+        {%- endif -%}
+    {%- endmacro %}
 
-{% from _self import configWarning %}
+    {% from _self import configWarning %}
 
-{% macro configDisabled(setting) -%}
-    {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
-    {%- if configArray[setting] is defined -%}
-        {{ true }}
-    {%- else -%}
-        {{ false }}
-    {%- endif -%}
-{%- endmacro %}
+    {% macro configDisabled(setting) -%}
+        {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
+        {%- if configArray[setting] is defined -%}
+            {{ true }}
+        {%- else -%}
+            {{ false }}
+        {%- endif -%}
+    {%- endmacro %}
 
-{% from _self import configDisabled %}
+    {% macro override(varName) %}
+        <p>
+            <strong>Note</strong>
+            This value is overriden by the presence of
+            <code>{{ varName }}</code>
+            in the environment file.</p>
+    {% endmacro %}
 
-<input type="hidden" name="action" value="plugins/save-plugin-settings">
-<input type="hidden" name="pluginHandle" value="avatax">
 
-{% namespace 'settings' %}
+    {% from _self import configDisabled %}
 
-	<h2>AvaTax Environment</h2>
+    <input type="hidden" name="action" value="plugins/save-plugin-settings">
+    <input type="hidden" name="pluginHandle" value="avatax">
 
-	{{ forms.selectField({
-	    label:        '',
-	    instructions: 'Select your AvaTax environment.',
-	    id:           'environment',
-	    name:         'environment',
-	    value:        settings['environment'],
-	    warning:      configWarning('environment'),
-	    'options': {
-	        'production' : 'Production',
-	        'sandbox' : 'Sandbox'
-	        }
-	    })
-	}}
+    {% namespace 'settings' %}
+
+    <h2>AvaTax Environment</h2>
+
+    {% if settings.isManuallySet('$AVATAX_ENV') %}
+        <p>Environment is manually set in the environment file.</p>
+        <p>Value:
+            <code>{{ settings.getEnvironment() }}</code>
+        </p>
+    {% else %}
+        {{ forms.selectField({
+            label:        '',
+            instructions: 'Select your AvaTax environment.',
+            id:           'environment',
+            name:         'environment',
+            value:        settings['environment'],
+            warning:      configWarning('environment'),
+            'options': {
+                'production' : 'Production',
+                'sandbox' : 'Sandbox'
+                }
+            })
+        }}
+    {% endif %}
 
     <input id="test-connection-btn" type="button" class="btn" value="{{ 'Test Connection' | t }}">
     <div id="test-connection-spinner" class="spinner hidden"></div>
@@ -58,11 +74,12 @@
 
     <h2>Production Account</h2>
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'Account ID',
         instructions: 'Enter your Avalara account ID here. It will be a ten-digit number (e.g. 1100012345).',
         id:           'accountId',
         name:         'accountId',
+        suggestEnvVars: true,
         value:        settings['accountId'],
         warning:      configWarning('accountId'),
         readonly:     configDisabled('accountId'),
@@ -70,7 +87,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'License Key',
         instructions: 'Enter your license key here. It will be a 16-character string (e.g. 1A2B3C4D5E6F7G8H).',
         id:           'licenseKey',
@@ -82,7 +100,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Company Code',
         instructions: 'Enter your [company code](https://help.avalara.com/004_AvaTax_Integrations/002_All_About_Company_Codes) here.',
         id:           'companyCode',
@@ -98,7 +117,8 @@
 
     <h2>Sandbox Account</h2>
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Account ID',
         instructions: 'Enter your Avalara account ID here.',
         id:           'sandboxAccountId',
@@ -110,7 +130,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'License Key',
         instructions: 'Enter your license key here.',
         id:           'sandboxLicenseKey',
@@ -122,7 +143,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Company Code',
         instructions: 'Enter your company code here.',
         id:           'sandboxCompanyCode',
@@ -137,16 +159,17 @@
     <hr>
 
     <h2>Origin Ship From Address</h2>
-	
-	
+
+
     {% if (configDisabled('shipFromName') or configDisabled('shipFromZipCode')) %}
         <div class="field">
             <p class="warning">Origin Ship From Address is being overridden by the shipFrom config setting in your `avataxtax.php` config file.</p>
         </div>
     {% endif %}
-    
 
-    {{ forms.textField({
+
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Name',
         instructions: '',
         id:           'shipFromName',
@@ -158,7 +181,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Street 1',
         instructions: '',
         id:           'shipFromStreet1',
@@ -170,7 +194,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Street 2',
         instructions: '',
         id:           'shipFromStreet2',
@@ -181,7 +206,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Street 3',
         instructions: '',
         id:           'shipFromStreet3',
@@ -194,7 +220,8 @@
 
     <div class="grid" data-cols="2" data-mode="pct">
         <div class="item nested-fields" data-colspan="1">
-            {{ forms.textField({
+            {{ forms.autosuggestField({
+        suggestEnvVars: true,
                 label: 'City',
                 instructions: '',
                 id:           'shipFromCity',
@@ -207,7 +234,8 @@
             }}
         </div>
         <div class="item nested-fields" data-colspan="1">
-            {{ forms.textField({
+            {{ forms.autosuggestField({
+        suggestEnvVars: true,
                 label:        'State',
                 instructions: '',
                 id:           'shipFromState',
@@ -217,13 +245,14 @@
                 readonly:     configDisabled('shipFromState'),
                 errors:       settings.getErrors('shipFromState')
                 })
-            }} 
+            }}
         </div>
     </div>
 
     <div class="grid" data-cols="2" data-mode="pct">
         <div class="item nested-fields" data-colspan="1">
-            {{ forms.textField({
+            {{ forms.autosuggestField({
+        suggestEnvVars: true,
                 label:        'Country',
                 instructions: '',
                 id:           'shipFromCountry',
@@ -236,7 +265,8 @@
             }}
         </div>
         <div class="item nested-fields" data-colspan="1">
-            {{ forms.textField({
+            {{ forms.autosuggestField({
+        suggestEnvVars: true,
                 label:        'Zip Code',
                 instructions: '',
                 id:           'shipFromZipCode',
@@ -246,7 +276,7 @@
                 readonly:     configDisabled('shipFromZipCode'),
                 errors:       settings.getErrors('shipFromZipCode')
                 })
-            }}          
+            }}
         </div>
     </div>
 
@@ -259,8 +289,9 @@
     <hr>
 
     <h2>Default Tax Codes</h2>
-    
-    {{ forms.textField({
+
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Default Tax Code',
         instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Products.',
         id:           'defaultTaxCode',
@@ -273,7 +304,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Default Shipping Code',
         instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Shipping.',
         id:           'defaultShippingCode',
@@ -286,7 +318,8 @@
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
+        suggestEnvVars: true,
         label:        'Default Discount Code',
         instructions: 'The default [Avalara Tax Code](https://taxcode.avatax.avalara.com/) to use for Discounts.',
         id:           'defaultDiscountCode',
@@ -302,26 +335,32 @@
     <hr>
 
     <h2>AvaTax Options</h2>
-    
+
     <div class="field">
         <div class="heading">
             <label for="settings-enableTaxCalculation">Tax Calculation Enabled</label>
             <div class="instructions">
+                {{ _self.override('AVATAX_TAX_CALC_ENABLED') }}
                 <p class="light">Disable this setting to disable tax calculations.</p>
             </div>
         </div>
+        {% if settings.isManuallySet('$AVATAX_TAX_CALC_ENABLED') %}
+            <p>Value:
+                <code>{{ settings.getEnableTaxCalculation() ? 'true' : 'false' }}</code>
+            </p>
+        {% else %}
+            {{ forms.lightswitch({
+                id:       'enableTaxCalculation',
+                name:     'enableTaxCalculation',
+                on:       settings['enableTaxCalculation'],
+                readonly: configDisabled('enableTaxCalculation'),
+                errors:   settings.getErrors('enableTaxCalculation')
+                })
+            }}
 
-        {{ forms.lightswitch({
-            id:       'enableTaxCalculation',
-            name:     'enableTaxCalculation',
-            on:       settings['enableTaxCalculation'],
-            readonly: configDisabled('enableTaxCalculation'),
-            errors:   settings.getErrors('enableTaxCalculation')
-            })
-        }}
-
-        {% if configDisabled('enableTaxCalculation') %}
-            <p class="warning">{{ configWarning('enableTaxCalculation') }}</p>
+            {% if configDisabled('enableTaxCalculation') %}
+                <p class="warning">{{ configWarning('enableTaxCalculation') }}</p>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -329,21 +368,28 @@
         <div class="heading">
             <label for="settings-enableCommitting">Comitting Enabled</label>
             <div class="instructions">
+                {{ _self.override('AVATAX_COMMITTING_ENABLED')}}
                 <p class="light">Disable this setting to disable document committing.<br>Read-only Tax calculations will still be performed if enabled, but no transactions will be committed.</p>
             </div>
         </div>
 
-        {{ forms.lightswitch({
-            id:       'enableCommitting',
-            name:     'enableCommitting',
-            on:       settings['enableCommitting'],
-            readonly: configDisabled('enableCommitting'),
-            errors:   settings.getErrors('enableCommitting')
-            })
-        }}
+        {% if settings.isManuallySet('$AVATAX_COMMITTING_ENABLED') %}
+            <p>Value:
+                <code>{{ settings.getEnableCommitting() ? 'true' : 'false' }}</code>
+            </p>
+        {% else %}
+            {{ forms.lightswitch({
+                id:       'enableCommitting',
+                name:     'enableCommitting',
+                on:       settings['enableCommitting'],
+                readonly: configDisabled('enableCommitting'),
+                errors:   settings.getErrors('enableCommitting')
+                })
+            }}
 
-        {% if configDisabled('enableCommitting') %}
-            <p class="warning">{{ configWarning('enableCommitting') }}</p>
+            {% if configDisabled('enableCommitting') %}
+                <p class="warning">{{ configWarning('enableCommitting') }}</p>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -351,11 +397,17 @@
         <div class="heading">
             <label for="settings-enableTaxCalculation">Address Validation Enabled</label>
             <div class="instructions">
+                {{ _self.override('AVATAX_ADDRESS_VALIDATION_ENABLED') }}
                 <p class="light">Disable this setting to disable AvaTax address validation.</p>
             </div>
         </div>
 
-        {{ forms.lightswitch({
+        {% if settings.isManuallySet('$AVATAX_ADDRESS_VALIDATION_ENABLED') %}
+            <p>Value:
+                <code>{{ settings.getEnableAddressValidation() ? 'true' : 'false' }}</code>
+            </p>
+        {% else %}
+            {{ forms.lightswitch({
             id:       'enableAddressValidation',
             name:     'enableAddressValidation',
             on:       settings['enableAddressValidation'],
@@ -363,9 +415,10 @@
             errors:  settings.getErrors('enableAddressValidation')
             })
         }}
-        
-         {% if configDisabled('enableAddressValidation') %}
-            <p class="warning">{{ configWarning('enableAddressValidation') }}</p>
+
+            {% if configDisabled('enableAddressValidation') %}
+                <p class="warning">{{ configWarning('enableAddressValidation') }}</p>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -373,11 +426,18 @@
         <div class="heading">
             <label for="settings-enablePartialRefunds">Partial Refunds Enabled</label>
             <div class="instructions">
-                <p class="light">Disable this setting to disable <a href="https://github.com/surprisehighway/craft-avatax#refunds">sending partial refunds to AvaTax</a>.</p>
+                {{ _self.override('AVATAX_PARTIAL_REFUNDS_ENABLED') }}
+                <p class="light">Disable this setting to disable
+                    <a href="https://github.com/surprisehighway/craft-avatax#refunds">sending partial refunds to AvaTax</a>.</p>
             </div>
         </div>
 
-        {{ forms.lightswitch({
+        {% if settings.isManuallySet('$AVATAX_PARTIAL_REFUNDS_ENABLED') %}
+            <p>Value:
+                <code>{{ settings.getEnablePartialRefunds() ? 'true' : 'false' }}</code>
+            </p>
+        {% else %}
+            {{ forms.lightswitch({
             id:       'enablePartialRefunds',
             name:     'enablePartialRefunds',
             on:       settings['enablePartialRefunds'],
@@ -385,9 +445,10 @@
             errors:  settings.getErrors('enablePartialRefunds')
             })
         }}
-        
-         {% if configDisabled('enablePartialRefunds') %}
-            <p class="warning">{{ configWarning('enablePartialRefunds') }}</p>
+
+            {% if configDisabled('enablePartialRefunds') %}
+                <p class="warning">{{ configWarning('enablePartialRefunds') }}</p>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -399,11 +460,17 @@
         <div class="heading">
             <label for="settings-debug">Debugging Enabled</label>
             <div class="instructions">
+                {{ _self.override('AVATAX_DEBUG') }}
                 <p class="light">By default only errors are logged. Enable full debugging to log all interaction with the AvaTax API.<br>This should only be enabled during development or when troubleshooting a problem.</p>
             </div>
         </div>
 
-        {{ forms.lightswitch({
+        {% if settings.isManuallySet('$AVATAX_DEBUG') %}
+            <p>Value:
+                <code>{{ settings.getDebug() ? 'true' : 'false' }}</code>
+            </p>
+        {% else %}
+            {{ forms.lightswitch({
             id:       'debug',
             name:     'debug',
             on:       settings.debug,
@@ -412,11 +479,12 @@
             })
         }}
 
-        {% if configDisabled('debug') %}
-            <p class="warning">{{ configWarning('debug') }}</p>
+            {% if configDisabled('debug') %}
+                <p class="warning">{{ configWarning('debug') }}</p>
+            {% endif %}
         {% endif %}
     </div>
 
-{% endnamespace %}
+    {% endnamespace %}
 
 {% endblock %}
