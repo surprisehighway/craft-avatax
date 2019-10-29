@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Avatax plugin for Craft CMS 3.x
  *
@@ -107,36 +108,36 @@ class Avatax extends Plugin
 
         // Register the commerce order tax adjuster
         Event::on(
-            OrderAdjustments::class, 
-            OrderAdjustments::EVENT_REGISTER_ORDER_ADJUSTERS, 
-            function(RegisterComponentTypesEvent $event) {
+            OrderAdjustments::class,
+            OrderAdjustments::EVENT_REGISTER_ORDER_ADJUSTERS,
+            function (RegisterComponentTypesEvent $event) {
                 $event->types[] = AvataxTaxAdjuster::class;
             }
         );
 
         // Register order complete listener
         Event::on(
-            Order::class, 
-            Order::EVENT_BEFORE_COMPLETE_ORDER, 
-            function(Event $event) {
+            Order::class,
+            Order::EVENT_BEFORE_COMPLETE_ORDER,
+            function (Event $event) {
                 $this->onBeforeOrderComplete($event);
             }
         );
-        
+
         // Register address save event listener
         Event::on(
-            Addresses::class, 
-            Addresses::EVENT_BEFORE_SAVE_ADDRESS, 
-            function(AddressEvent $event) {
+            Addresses::class,
+            Addresses::EVENT_BEFORE_SAVE_ADDRESS,
+            function (AddressEvent $event) {
                 $this->onBeforeSaveAddress($event);
             }
         );
 
         // Register order refund listener
         Event::on(
-            Payments::class, 
-            Payments::EVENT_AFTER_REFUND_TRANSACTION, 
-            function(RefundTransactionEvent $event) {
+            Payments::class,
+            Payments::EVENT_AFTER_REFUND_TRANSACTION,
+            function (RefundTransactionEvent $event) {
                 $this->onRefundTransaction($event);
             }
         );
@@ -173,7 +174,7 @@ class Avatax extends Plugin
         // @var AddressEvent $address
         $address = $event->address;
 
-        if(Craft::$app->getRequest()->getIsSiteRequest()) {
+        if (Craft::$app->getRequest()->getIsSiteRequest()) {
             $this->SalesTaxService->validateAddress($address);
         }
     }
@@ -190,8 +191,7 @@ class Avatax extends Plugin
         // @var Transaction $transaction
         $transaction = $event->transaction;
 
-        if($transaction->status == 'success')
-        {
+        if ($transaction->status == 'success') {
             $this->SalesTaxService->handleRefund($amount, $transaction);
         }
     }
@@ -207,8 +207,7 @@ class Avatax extends Plugin
         // Create an "avatax" tax category
         $category = $commerce->TaxCategories->getTaxCategoryByHandle('avatax');
 
-        if(!$category)
-        {
+        if (!$category) {
             $model = new TaxCategory();
 
             $model->name = 'Avatax';
@@ -216,12 +215,9 @@ class Avatax extends Plugin
             $model->description = 'Calculate tax rates using Avalara AvaTax';
             $model->default = FALSE;
 
-            if ( $commerce->TaxCategories->saveTaxCategory($model) )
-            {
+            if ($commerce->TaxCategories->saveTaxCategory($model)) {
                 Craft::info('Avatax tax category created successfully.', 'avatax');
-            }
-            else
-            {
+            } else {
                 Craft::warning('Could not save the Avatax tax category.', 'avatax');
             }
         }
@@ -230,8 +226,7 @@ class Avatax extends Plugin
         $group = new FieldGroup();
         $group->name = 'Avatax';
 
-        if( Craft::$app->fields->saveGroup($group) )
-        {
+        if (Craft::$app->fields->saveGroup($group)) {
             Craft::info('Avatax field group created successfully.', 'avatax');
 
             // Create avataxTaxCode field
@@ -249,12 +244,9 @@ class Avatax extends Plugin
                 ]
             ]);
 
-            if (Craft::$app->fields->saveField($field))
-            {
+            if (Craft::$app->fields->saveField($field)) {
                 Craft::info('Avatax Tax Code field created successfully.', 'avatax');
-            }
-            else
-            {
+            } else {
                 Craft::warning('Could not save the Avatax Tax Code field.', 'avatax');
             }
 
@@ -290,17 +282,12 @@ class Avatax extends Plugin
                 ]
             ]);
 
-            if (Craft::$app->fields->saveField($field))
-            {
+            if (Craft::$app->fields->saveField($field)) {
                 Craft::info('Avatax Customer Usage Type field created successfully.', 'Avatax');
-            }
-            else
-            {
+            } else {
                 Craft::warning('Could not save the Avatax Customer Usage Type field.', 'Avatax');
             }
-        }
-        else
-        {
+        } else {
             Craft::warning('Could not save the Avatax field group. ', 'Avatax');
         }
 
