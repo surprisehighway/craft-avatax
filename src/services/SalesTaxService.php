@@ -114,8 +114,8 @@ class SalesTaxService extends Component
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_SALESORDER, 
+            $client, $this->getCompanyCode(),
+            \Avalara\DocumentType::C_SALESORDER,
             $this->getCustomerCode($order)
         );
 
@@ -151,8 +151,8 @@ class SalesTaxService extends Component
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_SALESINVOICE, 
+            $client, $this->getCompanyCode(),
+            \Avalara\DocumentType::C_SALESINVOICE,
             $this->getCustomerCode($order)
         );
 
@@ -181,7 +181,7 @@ class SalesTaxService extends Component
         if($refundAmount < $paymentAmount) {
             return $this->refundPartialTransaction($amount, $transaction);
         }
-        
+
         return $this->refundFullTransaction($amount, $transaction);
     }
 
@@ -215,11 +215,11 @@ class SalesTaxService extends Component
         extract($request);
 
         $response = $client->refundTransaction(
-            $companyCode, 
-            $transactionCode, 
-            null, 
-            null, 
-            'true', 
+            $companyCode,
+            $transactionCode,
+            null,
+            null,
+            'true',
             $model
         );
 
@@ -264,7 +264,7 @@ class SalesTaxService extends Component
         $order = $transaction->order;
 
         // if no tax was recorded do not send to Avalara to calculate
-        if( !($order->getAdjustmentsTotalByType('tax') > 0)) {
+        if( !($order->getTotalTax() > 0)) {
             return false;
         }
 
@@ -284,8 +284,8 @@ class SalesTaxService extends Component
         $client = $this->createClient();
 
         $tb = new \Avalara\TransactionBuilder(
-            $client, $this->getCompanyCode(), 
-            \Avalara\DocumentType::C_RETURNINVOICE, 
+            $client, $this->getCompanyCode(),
+            \Avalara\DocumentType::C_RETURNINVOICE,
             $this->getCustomerCode($order)
         );
 
@@ -387,7 +387,7 @@ class SalesTaxService extends Component
         if(!$response)
         {
             // Convert commerce address to avatax address model
-            $request = new AddressValidationInfo(); 
+            $request = new AddressValidationInfo();
 
             $request->textCase = 'Mixed';
             $request->line1 = $address->address1;
@@ -440,7 +440,7 @@ class SalesTaxService extends Component
      */
     private function getCustomerCode($order)
     {
-        
+
         $customerCode = (!empty($order->email)) ? $order->email : 'GUEST';
 
         // Override value from a logged-in User field if available
@@ -586,7 +586,7 @@ class SalesTaxService extends Component
 
         // Add each line item to the transaction
         foreach ($order->lineItems as $lineItem) {
-            
+
             // Our product has the avatax tax category specified
             if($lineItem->taxCategory->handle === 'avatax'){
 
@@ -619,12 +619,12 @@ class SalesTaxService extends Component
         $discountCode = $defaultDiscountCode;
 
         foreach ($order->adjustments as $adjustment) {
-            
+
             /** @var OrderAdjustment $adjustment */
-            
+
             if($adjustment->type === 'discount') {
 
-                // if the discount is for a specific lineItem make sure the discountCode 
+                // if the discount is for a specific lineItem make sure the discountCode
                 // for this adjustment matches the lineItem tax code
                 if ($adjustmentLineItem = $adjustment->getLineItem())
                 {
@@ -653,7 +653,7 @@ class SalesTaxService extends Component
         $shippingTaxCode = $defaultShippingCode;
 
         $t = $t->withLine(
-            $order->getAdjustmentsTotalByType('shipping'),  // total amount for the line item
+            $order->getTotalShippingCost(),  // total amount for the line item
             1,                                              // quantity
             "FREIGHT",                                      // Item Code
             $shippingTaxCode                                // Tax code for freight (Shipping)
@@ -683,9 +683,9 @@ class SalesTaxService extends Component
 
         // Check if tax request has been cached when not committing, if not make api call.
         $response = $cache->get($cacheKey);
-        //if($response) Avatax::info('Cached order found: '.$cacheKey); 
+        //if($response) Avatax::info('Cached order found: '.$cacheKey);
 
-        if(!$response || $this->type === 'invoice') 
+        if(!$response || $this->type === 'invoice')
         {
             $response = $t->create();
 
@@ -724,9 +724,9 @@ class SalesTaxService extends Component
     private function getOrderSignature(Order $order)
     {
         $orderNumber = $order->number;
-        $shipping = $order->getAdjustmentsTotalByType('shipping');
-        $discount = $order->getAdjustmentsTotalByType('discount');
-        $tax = $order->getAdjustmentsTotalByType('tax');
+        $shipping = $order->getTotalShippingCost();
+        $discount = $order->getTotalDiscount();
+        $tax = $order->getTotalTax();
         $total = $order->totalPrice;
 
         $address1 = $order->shippingAddress->address1;
@@ -745,7 +745,7 @@ class SalesTaxService extends Component
             $lineItems .= $itemCode.$subtotal.$qty;
         }
 
-        return md5($orderNumber.$shipping.$discount.$tax.$total.$lineItems.$address); 
+        return md5($orderNumber.$shipping.$discount.$tax.$total.$lineItems.$address);
     }
 
     /**
@@ -760,6 +760,6 @@ class SalesTaxService extends Component
         $zipCode = $address->zipCode;
         $country = $address->country->iso;
 
-        return md5($address1.$address2.$city.$zipCode.$country); 
+        return md5($address1.$address2.$city.$zipCode.$country);
     }
 }
