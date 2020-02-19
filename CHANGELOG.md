@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - Fixed deprecation errors caused by `craft\commerce\elements\Order::getAdjustmentsTotalByType()` - thanks @jmauzyk!
 - Fixed asset bundle namespace - thanks @abryrath!
+- Fixed potential bug in json address validation if country was not set in address model
 
 ## 2.0.7 - 2019-09-20
 ### Added
