@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.8 - 2020-02-18
+### Fixed
+- Fixed deprecation errors caused by `craft\commerce\elements\Order::getAdjustmentsTotalByType()` - thanks @jmauzyk!
+- Fixed asset bundle namespace - thanks @abryrath!
+- Fixed potential bug in json address validation if country was not set in address model
+
 ## 2.0.7 - 2019-09-20
 ### Added
 - Added a json endpoint to use for ajax CertCapture client lookup on the front end  ([more](https://github.com/surprisehighway/craft-avatax#certcapture-customer-lookup))
