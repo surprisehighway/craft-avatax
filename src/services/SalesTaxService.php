@@ -303,7 +303,7 @@ class SalesTaxService extends Component
             $order->shippingAddress->city,
             $this->getState($order->shippingAddress),
             $order->shippingAddress->zipCode,
-            $order->shippingAddress->getCountry()->iso
+            $this->getCountry($order->shippingAddress)
         )->withCommit();
 
         // add entity/use code if set for the customer
@@ -395,7 +395,7 @@ class SalesTaxService extends Component
             $request->line3 = '';
             $request->city = $address->city;
             $request->region = $this->getState($address);
-            $request->country = $address->country->iso;
+            $request->country = $this->getCountry($address);
             $request->postalCode = $address->zipCode;
             $request->latitude = '';
             $request->longitude = '';
@@ -581,7 +581,7 @@ class SalesTaxService extends Component
                 $order->shippingAddress->city,
                 $this->getState($order->shippingAddress),
                 $order->shippingAddress->zipCode,
-                $order->shippingAddress->getCountry()->iso
+                $this->getCountry($order->shippingAddress)
             );
 
         // Add each line item to the transaction
@@ -715,7 +715,15 @@ class SalesTaxService extends Component
      */
     private function getState(Address $address)
     {
-        return $address->getState() ? $address->getState() ? $address->getState()->abbreviation : $address->getStateText() : '';
+        return $address->stateId ? $address->getState()->abbreviation : $address->getStateText();
+    }
+
+    /**
+     * Resolve the country based on available attributes.
+     */
+    private function getCountry(Address $address)
+    {
+        return $address->countryId ? $address->getCountry()->iso : $address->getCountryText();
     }
 
     /**
@@ -733,7 +741,7 @@ class SalesTaxService extends Component
         $address2 = $order->shippingAddress->address2;
         $city = $order->shippingAddress->city;
         $zipCode = $order->shippingAddress->zipCode;
-        $country = $order->shippingAddress->country->iso ?? $order->shippingAddress->country;
+        $country = $this->getCountry($order->shippingAddress);
         $address = $address1.$address2.$city.$zipCode.$country;
 
         $lineItems = '';
@@ -758,7 +766,7 @@ class SalesTaxService extends Component
         $city = $address->city;
         $state = $this->getState($address);
         $zipCode = $address->zipCode;
-        $country = $address->country->iso ?? $address->country;
+        $country = $this->getCountry($address);
 
         return md5($address1.$address2.$city.$zipCode.$country);
     }

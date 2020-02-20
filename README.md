@@ -8,9 +8,9 @@ Calculate and add sales tax to an order's base tax using Avalara's AvaTax servic
 
 ## Requirements
 
-This plugin requires Craft CMS 3.1.0 or later and Craft Commerce 2.0 or later.
+This plugin requires Craft 3.3 and Craft Commerce 2.2 or later, or Craft 3.4 and Craft Commerce 3.0 and later.
 
-> Related: The Craft 2.x Commerce 1.x [version](https://github.com/surprisehighway/craft-avataxtaxadjuster) of this plugin is no longer actively maintained but is still supported.
+> Related: The Craft 2.x Commerce 1.x [version](https://github.com/surprisehighway/craft-avataxtaxadjuster) of this plugin is no longer actively maintained but is still available.
 
 ## Installation
 
