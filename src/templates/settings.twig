@@ -11,24 +11,11 @@
 {% macro configWarning(setting) -%}
     {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
     {%- if configArray[setting] is defined -%}
-        {{- "This is being overridden by the `#{setting}` setting in the `config/avatax.php` file."|raw }}
-    {%- else -%}
-        {{ false }}
+        {{- "This is being overridden by the <code>#{setting}</code> setting in the <code>config/avatax.php</code> file."|raw }}
     {%- endif -%}
 {%- endmacro %}
 
 {% from _self import configWarning %}
-
-{% macro configDisabled(setting) -%}
-    {%- set configArray = craft.app.config.getConfigFromFile("avatax") -%}
-    {%- if configArray[setting] is defined -%}
-        {{ true }}
-    {%- else -%}
-        {{ false }}
-    {%- endif -%}
-{%- endmacro %}
-
-{% from _self import configDisabled %}
 
 <input type="hidden" name="action" value="plugins/save-plugin-settings">
 <input type="hidden" name="pluginHandle" value="avatax">
@@ -65,7 +52,6 @@
         name:         'accountId',
         value:        settings['accountId'],
         warning:      configWarning('accountId'),
-        readonly:     configDisabled('accountId'),
         errors:       settings.getErrors('accountId')
         })
     }}
@@ -77,7 +63,6 @@
         name:         'licenseKey',
         value:        settings['licenseKey'],
         warning:      configWarning('licenseKey'),
-        readonly:     configDisabled('licenseKey'),
         errors:       settings.getErrors('licenseKey')
         })
     }}
@@ -89,7 +74,6 @@
         name:         'companyCode',
         value:        settings['companyCode'],
         warning:      configWarning('companyCode'),
-        readonly:     configDisabled('companyCode'),
         errors:       settings.getErrors('companyCode')
         })
     }}
@@ -105,7 +89,6 @@
         name:         'sandboxAccountId',
         value:        settings['sandboxAccountId'],
         warning:      configWarning('sandboxAccountId'),
-        readonly:     configDisabled('sandboxAccountId'),
         errors:       settings.getErrors('sandboxAccountId')
         })
     }}
@@ -117,7 +100,6 @@
         name:         'sandboxLicenseKey',
         value:        settings['sandboxLicenseKey'],
         warning:      configWarning('sandboxLicenseKey'),
-        readonly:     configDisabled('sandboxLicenseKey'),
         errors:       settings.getErrors('sandboxLicenseKey')
         })
     }}
@@ -129,7 +111,6 @@
         name:         'sandboxCompanyCode',
         value:        settings['sandboxCompanyCode'],
         warning:      configWarning('sandboxCompanyCode'),
-        readonly:     configDisabled('sandboxCompanyCode'),
         errors:       settings.getErrors('sandboxCompanyCode')
         })
     }}
@@ -139,7 +120,7 @@
     <h2>Origin Ship From Address</h2>
 	
 	
-    {% if (configDisabled('shipFromName') or configDisabled('shipFromZipCode')) %}
+    {% if (configWarning('shipFromName') or configWarning('shipFromZipCode')) %}
         <div class="field">
             <p class="warning">Origin Ship From Address is being overridden by the shipFrom config setting in your `avataxtax.php` config file.</p>
         </div>
@@ -153,7 +134,6 @@
         name:         'shipFromName',
         value:        settings.shipFromName,
         required:     true,
-        readonly:     configDisabled('shipFromName'),
         errors:       settings.getErrors('shipFromName')
         })
     }}
@@ -165,7 +145,6 @@
         name:         'shipFromStreet1',
         value:        settings.shipFromStreet1,
         required:     true,
-        readonly:     configDisabled('shipFromStreet1'),
         errors:       settings.getErrors('shipFromStreet1')
         })
     }}
@@ -176,7 +155,6 @@
         id:           'shipFromStreet2',
         name:         'shipFromStreet2',
         value:        settings.shipFromStreet2,
-        readonly:     configDisabled('shipFromStreet2'),
         errors:       settings.getErrors('shipFromStreet2')
         })
     }}
@@ -187,7 +165,6 @@
         id:           'shipFromStreet3',
         name:         'shipFromStreet3',
         value:        settings.shipFromStreet3,
-        readonly:     configDisabled('shipFromStreet3'),
         errors:       settings.getErrors('shipFromStreet3')
         })
     }}
@@ -201,7 +178,6 @@
                 name:         'shipFromCity',
                 value:        settings.shipFromCity,
                 required:     true,
-                readonly:     configDisabled('shipFromCity'),
                 errors:       settings.getErrors('shipFromCity')
                 })
             }}
@@ -214,7 +190,6 @@
                 name:         'shipFromState',
                 value:        settings.shipFromState,
                 required:     true,
-                readonly:     configDisabled('shipFromState'),
                 errors:       settings.getErrors('shipFromState')
                 })
             }} 
@@ -230,7 +205,6 @@
                 name:         'shipFromCountry',
                 value:        settings.shipFromCountry,
                 required:     true,
-                readonly:     configDisabled('shipFromCountry'),
                 errors:       settings.getErrors('shipFromCountry')
                 })
             }}
@@ -243,14 +217,13 @@
                 name:         'shipFromZipCode',
                 value:        settings.shipFromZipCode,
                 required:     true,
-                readonly:     configDisabled('shipFromZipCode'),
                 errors:       settings.getErrors('shipFromZipCode')
                 })
             }}          
         </div>
     </div>
 
-    {% if (configDisabled('shipFromName') or configDisabled('shipFromZipCode')) %}
+    {% if (configWarning('shipFromName') or configWarning('shipFromZipCode')) %}
         <div class="field">
             <p class="warning">Origin Ship From Address is being overridden by the shipFrom config setting in your `avataxtax.php` config file.</p>
         </div>
@@ -267,7 +240,6 @@
         name:         'defaultTaxCode',
         value:        settings.defaultTaxCode,
         required:     true,
-        readonly:     configDisabled('defaultTaxCode'),
         warning:      configWarning('defaultTaxCode'),
         errors:       settings.getErrors('defaultTaxCode')
         })
@@ -280,7 +252,6 @@
         name:         'defaultShippingCode',
         value:        settings.defaultShippingCode,
         required:     true,
-        readonly:     configDisabled('defaultShippingCode'),
         warning:      configWarning('defaultShippingCode'),
         errors:       settings.getErrors('defaultShippingCode')
         })
@@ -293,7 +264,6 @@
         name:         'defaultDiscountCode',
         value:        settings.defaultDiscountCode,
         required:     true,
-        readonly:     configDisabled('defaultDiscountCode'),
         warning:      configWarning('defaultDiscountCode'),
         errors:       settings.getErrors('defaultDiscountCode')
         })
@@ -315,12 +285,11 @@
             id:       'enableTaxCalculation',
             name:     'enableTaxCalculation',
             on:       settings['enableTaxCalculation'],
-            readonly: configDisabled('enableTaxCalculation'),
             errors:   settings.getErrors('enableTaxCalculation')
             })
         }}
 
-        {% if configDisabled('enableTaxCalculation') %}
+        {% if configWarning('enableTaxCalculation') %}
             <p class="warning">{{ configWarning('enableTaxCalculation') }}</p>
         {% endif %}
     </div>
@@ -337,12 +306,11 @@
             id:       'enableCommitting',
             name:     'enableCommitting',
             on:       settings['enableCommitting'],
-            readonly: configDisabled('enableCommitting'),
             errors:   settings.getErrors('enableCommitting')
             })
         }}
 
-        {% if configDisabled('enableCommitting') %}
+        {% if configWarning('enableCommitting') %}
             <p class="warning">{{ configWarning('enableCommitting') }}</p>
         {% endif %}
     </div>
@@ -359,12 +327,11 @@
             id:       'enableAddressValidation',
             name:     'enableAddressValidation',
             on:       settings['enableAddressValidation'],
-            readonly: configDisabled('enableAddressValidation'),
             errors:  settings.getErrors('enableAddressValidation')
             })
         }}
         
-         {% if configDisabled('enableAddressValidation') %}
+         {% if configWarning('enableAddressValidation') %}
             <p class="warning">{{ configWarning('enableAddressValidation') }}</p>
         {% endif %}
     </div>
@@ -381,12 +348,11 @@
             id:       'enablePartialRefunds',
             name:     'enablePartialRefunds',
             on:       settings['enablePartialRefunds'],
-            readonly: configDisabled('enablePartialRefunds'),
             errors:  settings.getErrors('enablePartialRefunds')
             })
         }}
         
-         {% if configDisabled('enablePartialRefunds') %}
+         {% if configWarning('enablePartialRefunds') %}
             <p class="warning">{{ configWarning('enablePartialRefunds') }}</p>
         {% endif %}
     </div>
@@ -407,12 +373,11 @@
             id:       'debug',
             name:     'debug',
             on:       settings.debug,
-            readonly: configDisabled('debug'),
             errors:   settings.getErrors('debug')
             })
         }}
 
-        {% if configDisabled('debug') %}
+        {% if configWarning('debug') %}
             <p class="warning">{{ configWarning('debug') }}</p>
         {% endif %}
     </div>
