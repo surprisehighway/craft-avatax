@@ -354,7 +354,12 @@ class SalesTaxService extends Component
             Avatax::info(__FUNCTION__.'(): Address validation is disabled.');
 
             return false;
-        }
+				}
+				
+				if(!empty(Craft::$app->getRequest()->getParam('estimatedShippingAddress'))){
+					Avatax::info(__FUNCTION__.'(): Skipping address validation for estimated shipping');
+					return false;
+				}
 
         $response = $this->getValidateAddress($address);
 
