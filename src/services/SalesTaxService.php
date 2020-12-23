@@ -768,6 +768,6 @@ class SalesTaxService extends Component
         $zipCode = $address->zipCode;
         $country = $this->getCountry($address);
 
-        return md5($address1.$address2.$city.$zipCode.$country);
+        return md5($address1.$address2.$city.$state.$zipCode.$country);
     }
 }
