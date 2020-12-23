@@ -358,7 +358,7 @@ class SalesTaxService extends Component
 
         $response = $this->getValidateAddress($address);
 
-        if(!empty($response->validatedAddresses) || isset($response->coordinates))
+        if(!empty($response->validatedAddresses) && isset($response->coordinates))
         {
             return true;
         }
