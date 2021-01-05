@@ -82,7 +82,7 @@ class JsonController extends Controller
 
         $response = $taxService->getValidateAddress($address);
 
-        if(!empty($response->validatedAddresses) || isset($response->coordinates))
+        if(!empty($response->validatedAddresses) && isset($response->coordinates))
         {
             return $this->asJson([
                 'success' => true,

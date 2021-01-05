@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.2
+### Fixed
+- Skip address validation for estimated addresses to avoid errors with incomplete addresses. [#22](https://github.com/surprisehighway/craft-avatax/issues/22)
+- Fixed an issue where updating the shipping state did not refresh the cached tax. [#24](https://github.com/surprisehighway/craft-avatax/issues/24)
+- Fixed an issue where addresses returned by Avalara as unresolved were still considered valid. [#25](https://github.com/surprisehighway/craft-avatax/issues/25)
+
 ## 2.1.1
 ### Fixed
 - Fixed an issue where settings fields were readonly even when not being overridden by config file. [#20](https://github.com/surprisehighway/craft-avatax/issues/20)

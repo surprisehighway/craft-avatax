@@ -356,9 +356,15 @@ class SalesTaxService extends Component
             return false;
         }
 
+        if($address->isEstimated) {
+            Avatax::info(__FUNCTION__.'(): Skipping address validation for estimated shipping.');
+            
+            return false;
+        }
+
         $response = $this->getValidateAddress($address);
 
-        if(!empty($response->validatedAddresses) || isset($response->coordinates))
+        if(!empty($response->validatedAddresses) && isset($response->coordinates))
         {
             return true;
         }
@@ -768,6 +774,6 @@ class SalesTaxService extends Component
         $zipCode = $address->zipCode;
         $country = $this->getCountry($address);
 
-        return md5($address1.$address2.$city.$zipCode.$country);
+        return md5($address1.$address2.$city.$state.$zipCode.$country);
     }
 }
