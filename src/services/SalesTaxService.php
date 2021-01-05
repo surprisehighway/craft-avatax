@@ -356,6 +356,12 @@ class SalesTaxService extends Component
             return false;
         }
 
+        if($address->isEstimated) {
+            Avatax::info(__FUNCTION__.'(): Skipping address validation for estimated shipping.');
+            
+            return false;
+        }
+
         $response = $this->getValidateAddress($address);
 
         if(!empty($response->validatedAddresses) && isset($response->coordinates))
