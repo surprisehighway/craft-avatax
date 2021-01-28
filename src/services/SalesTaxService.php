@@ -746,9 +746,10 @@ class SalesTaxService extends Component
         $address1 = $order->shippingAddress->address1;
         $address2 = $order->shippingAddress->address2;
         $city = $order->shippingAddress->city;
+        $state = $this->getState($order->shippingAddress);
         $zipCode = $order->shippingAddress->zipCode;
         $country = $this->getCountry($order->shippingAddress);
-        $address = $address1.$address2.$city.$zipCode.$country;
+        $address = $address1.$address2.$city.$state.$zipCode.$country;
 
         $lineItems = '';
         foreach ($order->lineItems as $lineItem)
