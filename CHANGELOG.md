@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.3
+### Fixed
+- Fixed an issue where updating the shipping state did not refresh the cached order. [#27](https://github.com/surprisehighway/craft-avatax/issues/27)
+
 ## 2.1.2
 ### Fixed
 - Skip address validation for estimated addresses to avoid errors with incomplete addresses. [#22](https://github.com/surprisehighway/craft-avatax/issues/22)
