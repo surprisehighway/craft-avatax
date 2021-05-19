@@ -45,36 +45,39 @@
 
     <h2>Production Account</h2>
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'Account ID',
         instructions: 'Enter your Avalara account ID here. It will be a ten-digit number (e.g. 1100012345).',
         id:           'accountId',
         name:         'accountId',
         value:        settings['accountId'],
         warning:      configWarning('accountId'),
-        errors:       settings.getErrors('accountId')
+        errors:       settings.getErrors('accountId'),
+        suggestEnvVars: true
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'License Key',
         instructions: 'Enter your license key here. It will be a 16-character string (e.g. 1A2B3C4D5E6F7G8H).',
         id:           'licenseKey',
         name:         'licenseKey',
         value:        settings['licenseKey'],
         warning:      configWarning('licenseKey'),
-        errors:       settings.getErrors('licenseKey')
+        errors:       settings.getErrors('licenseKey'),
+        suggestEnvVars: true
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'Company Code',
         instructions: 'Enter your [company code](https://help.avalara.com/004_AvaTax_Integrations/002_All_About_Company_Codes) here.',
         id:           'companyCode',
         name:         'companyCode',
         value:        settings['companyCode'],
         warning:      configWarning('companyCode'),
-        errors:       settings.getErrors('companyCode')
+        errors:       settings.getErrors('companyCode'),
+        suggestEnvVars: true
         })
     }}
 
@@ -82,36 +85,39 @@
 
     <h2>Sandbox Account</h2>
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'Account ID',
         instructions: 'Enter your Avalara account ID here.',
         id:           'sandboxAccountId',
         name:         'sandboxAccountId',
         value:        settings['sandboxAccountId'],
         warning:      configWarning('sandboxAccountId'),
-        errors:       settings.getErrors('sandboxAccountId')
+        errors:       settings.getErrors('sandboxAccountId'),
+        suggestEnvVars: true
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'License Key',
         instructions: 'Enter your license key here.',
         id:           'sandboxLicenseKey',
         name:         'sandboxLicenseKey',
         value:        settings['sandboxLicenseKey'],
         warning:      configWarning('sandboxLicenseKey'),
-        errors:       settings.getErrors('sandboxLicenseKey')
+        errors:       settings.getErrors('sandboxLicenseKey'),
+        suggestEnvVars: true
         })
     }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label:        'Company Code',
         instructions: 'Enter your company code here.',
         id:           'sandboxCompanyCode',
         name:         'sandboxCompanyCode',
         value:        settings['sandboxCompanyCode'],
         warning:      configWarning('sandboxCompanyCode'),
-        errors:       settings.getErrors('sandboxCompanyCode')
+        errors:       settings.getErrors('sandboxCompanyCode'),
+        suggestEnvVars: true
         })
     }}
 
