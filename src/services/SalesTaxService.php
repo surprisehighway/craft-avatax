@@ -514,8 +514,8 @@ class SalesTaxService extends Component
 
         if($settings['environment'] === 'production')
         {
-            $accountId = $settings->getAccountId();
-            $licenseKey = $settings->getLicenseKey();
+            $accountId = (Craft::parseEnv($settings['accountId'])) ?? '';
+            $licenseKey = (Craft::parseEnv($settings['licenseKey'])) ?? '';
 
             if(!empty($accountId) && !empty($licenseKey))
             {
@@ -530,8 +530,8 @@ class SalesTaxService extends Component
 
         if($settings['environment'] === 'sandbox')
         {
-            $sandboxAccountId = $settings->getSandboxAccountId();
-            $sandboxLicenseKey = $settings->getSandboxLicenseKey();
+            $sandboxAccountId = (Craft::parseEnv($settings['sandboxAccountId'])) ?? '';
+            $sandboxLicenseKey = (Craft::parseEnv($settings['sandboxLicenseKey'])) ?? '';
 
             if(!empty($sandboxAccountId) && !empty($sandboxLicenseKey))
             {
