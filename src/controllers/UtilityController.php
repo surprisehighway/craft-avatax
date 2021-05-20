@@ -48,6 +48,15 @@ class UtilityController extends Controller
         $request = Craft::$app->getRequest();
         $settings = $request->getParam('settings');
 
+        // Workaround for testing settings with ENV variables before they are saved
+        $allowEnv = ['accountId', 'licenseKey', 'companyCode', 'sandboxAccountId', 'sandboxLicenseKey', 'sandboxCompanyCode'];
+
+        foreach($settings as $key => $val) {
+            if(in_array($key, $allowEnv)) {
+                $settings[$key] = (Craft::parseEnv($val)) ?? $val;
+            }
+        }
+
         $taxService = new SalesTaxService;
 
         $response = $taxService->connectionTest($settings);

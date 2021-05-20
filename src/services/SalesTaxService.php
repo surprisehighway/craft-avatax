@@ -430,12 +430,12 @@ class SalesTaxService extends Component
     {
         if($this->settings['environment'] === 'production')
         {
-            $companyCode = $this->settings['companyCode'];
+            $companyCode = $this->settings->getCompanyCode();
         }
 
         if($this->settings['environment'] === 'sandbox')
         {
-            $companyCode = $this->settings['sandboxCompanyCode'];
+            $companyCode =$this->settings->getSandboxCompanyCode();
         }
 
         return $companyCode;
@@ -514,12 +514,15 @@ class SalesTaxService extends Component
 
         if($settings['environment'] === 'production')
         {
-            if(!empty($settings['accountId']) && !empty($settings['licenseKey']))
+            $accountId = $settings->getAccountId();
+            $licenseKey = $settings->getLicenseKey();
+
+            if(!empty($accountId) && !empty($licenseKey))
             {
                 // Create a new client
                 $client = new AvaTaxClient($pluginName, $pluginVersion, $machineName, 'production');
 
-                $client->withLicenseKey( $settings['accountId'], $settings['licenseKey'] );
+                $client->withLicenseKey($accountId, $licenseKey);
 
                 return $client;
             }
@@ -527,12 +530,15 @@ class SalesTaxService extends Component
 
         if($settings['environment'] === 'sandbox')
         {
-            if(!empty($settings['sandboxAccountId']) && !empty($settings['sandboxLicenseKey']))
+            $sandboxAccountId = $settings->getSandboxAccountId();
+            $sandboxLicenseKey = $settings->getSandboxLicenseKey();
+
+            if(!empty($sandboxAccountId) && !empty($sandboxLicenseKey))
             {
                 // Create a new client
                 $client = new AvaTaxClient($pluginName, $pluginVersion, $machineName, 'sandbox');
 
-                $client->withLicenseKey( $settings['sandboxAccountId'], $settings['sandboxLicenseKey'] );
+                $client->withLicenseKey($sandboxAccountId, $sandboxLicenseKey);
 
                 return $client;
             }

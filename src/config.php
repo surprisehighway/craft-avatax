@@ -23,45 +23,55 @@
  */
 
 return [
-   	// The address you will be posting from.
-	'shipFromName'    => 'John Doe',
-	'shipFromStreet1' => '201 E Randolph St',
-	'shipFromStreet2' => '',
-	'shipFromStreet3' => '',
-	'shipFromCity'    => 'Chicago',
-	'shipFromState'   => 'IL',
-	'shipFromZipCode' => '60601',
-	'shipFromCountry' => 'US',
+	'*' => [
+		// The address you will be posting from.
+		'shipFromName'    => 'John Doe',
+		'shipFromStreet1' => '201 E Randolph St',
+		'shipFromStreet2' => '',
+		'shipFromStreet3' => '',
+		'shipFromCity'    => 'Chicago',
+		'shipFromState'   => 'IL',
+		'shipFromZipCode' => '60601',
+		'shipFromCountry' => 'US',
 
-	// The default Avalara Tax Code to use for Products.
-	'defaultTaxCode' => 'P0000000',
+		// The default Avalara Tax Code to use for Products.
+		'defaultTaxCode' => 'P0000000',
 
-	// The default Avalara Tax Code to use for Shipping.
-	'defaultShippingCode' => 'FR',
+		// The default Avalara Tax Code to use for Shipping.
+		'defaultShippingCode' => 'FR',
 
-	// The default Avalara Tax Code to use for Discounts.
-	'defaultDiscountCode' => 'OD010000',
+		// The default Avalara Tax Code to use for Discounts.
+		'defaultDiscountCode' => 'OD010000',
 
-	// Production account information.
-    'accountId'          => '',
-    'licenseKey'         => '',
-    'companyCode'        => '',
+		// Production account information from ENV.
+		'accountId'          => '$AVATAX_ACCOUNT_ID',
+		'licenseKey'         => '$AVATAX_LICENSE_KEY',
+		'companyCode'        => '$AVATAX_COMPANY_CODE',
 
-    // Sandbox account information.
-    'sandboxAccountId'   => '',
-    'sandboxLicenseKey'  => '',
-    'sandboxCompanyCode' => '',
+		// Sandbox account information from ENV.
+		'sandboxAccountId'   => '$AVATAX_SANDBOX_ACCOUNT_ID',
+		'sandboxLicenseKey'  => '$AVATAX_SANDBOX_LICENSE_KEY',
+		'sandboxCompanyCode' => '$AVATAX_SANDBOX_COMPANY_CODE',
 
-    // Environment - 'production' or 'sandbox'.
-    'environment' => 'sandbox',
+		// Environment - 'production' or 'sandbox'.
+		'environment' => 'sandbox',
 
-    // AvaTax options - true or false
-    'enableTaxCalculation'    => true,
-    'enableCommitting'        => true,
-    'enableAddressValidation' => true,
-    'enablePartialRefunds'    => true,
-    
-    // Enable debugging - true or false
-    'debug'                   => true,
+		// AvaTax options - true or false
+		'enableTaxCalculation'    => true,
+		'enableCommitting'        => true,
+		'enableAddressValidation' => false,
+		'enablePartialRefunds'    => true,
+		
+		// Enable debugging - true or false
+		'debug' => true,
+	],
+
+	'production' => [
+		// Environment - 'production' or 'sandbox'.
+		'environment' => 'production',
+
+		// Enable debugging - true or false
+		'debug' => false,
+	],
 
 ];
