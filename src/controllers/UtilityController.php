@@ -48,6 +48,7 @@ class UtilityController extends Controller
         $request = Craft::$app->getRequest();
         $settings = $request->getParam('settings');
 
+        // Workaround for testing settings with ENV variables before they are saved
         $allowEnv = ['accountId', 'licenseKey', 'companyCode', 'sandboxAccountId', 'sandboxLicenseKey', 'sandboxCompanyCode'];
 
         foreach($settings as $key => $val) {
