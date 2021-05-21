@@ -237,7 +237,7 @@ class SalesTaxService extends Component
             return true;
         }
 
-        Avatax::error('Transaction Code '.$transactionCode.' could not be refunded.');
+        Avatax::error('Transaction Code '.$transactionCode.' could not be refunded.', ['request' => json_encode($request), 'response' => json_encode($response)]);
 
         return false;
     }
@@ -370,8 +370,7 @@ class SalesTaxService extends Component
         }
 
         // Request failed
-        Avatax::error('Address validation failed.');
-        throw new Exception('Invalid address.');
+        Avatax::error('Address validation failed.', ['request' => json_encode($address), 'response' => json_encode($response)]);
 
         return false;
     }
@@ -545,10 +544,7 @@ class SalesTaxService extends Component
         }
 
         // Don't have credentials
-        Avatax::error('Avatax Account Credentials not found');
-
-        // throw a craft exception which returns the error
-        throw new Exception('Avatax Account Credentials not found');
+        Avatax::error('Avatax Account Credentials not found. Check the plugin settings.');
     }
 
     /**
@@ -714,10 +710,8 @@ class SalesTaxService extends Component
             return $response->totalTax;
         }
 
-        Avatax::error('Request to avatax.com failed');
-
-        // Request failed
-        throw new Exception('Request could not be completed');
+        // Log error
+        Avatax::error('Request to avatax.com failed', ['request' => json_encode($model), 'response' => json_encode($response)]);
 
         return false;
     }
