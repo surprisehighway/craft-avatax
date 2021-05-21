@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.4
+### Added
+- Allow for live and sandbox credentials to be set as ENV variables with autosuggest fields in the plugin settings to keep sensitive info out of Project Config. [#11](https://github.com/surprisehighway/craft-avatax/issues/11) [30](https://github.com/surprisehighway/craft-avatax/issues/30)
+- Update config override example to default to multi-environment settings with ENV examples.
+- For new installs the address validation setting will be disabled by default.
+
+### Fixed
+- Better error handling. No longer throw exceptions on the front end but log more complete error responses. [#29](https://github.com/surprisehighway/craft-avatax/issues/29) [#31](https://github.com/surprisehighway/craft-avatax/issues/31)
+
 ## 2.1.3
 ### Fixed
 - Fixed an issue where updating the shipping state did not refresh the cached order. [#27](https://github.com/surprisehighway/craft-avatax/issues/27)

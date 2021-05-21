@@ -14,6 +14,7 @@ use surprisehighway\avatax\Avatax;
 
 use Craft;
 use craft\base\Model;
+use craft\behaviors\EnvAttributeParserBehavior;
 
 /**
  * @author    Surprise Highway
@@ -161,6 +162,71 @@ class Settings extends Model
     // Public Methods
     // =========================================================================
 
+    public function behaviors()
+    {
+        return [
+            'parser' => [
+                'class' => EnvAttributeParserBehavior::class,
+                'attributes' => [
+                    'accountId',
+                    'licenseKey',
+                    'companyCode',
+                    'sandboxAccountId',
+                    'sandboxLicenseKey',
+                    'sandboxCompanyCode',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountId()
+    {
+        return (Craft::parseEnv($this->accountId) ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getLicenseKey()
+    {
+        return (Craft::parseEnv($this->licenseKey) ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyCode()
+    {
+        return (Craft::parseEnv($this->companyCode) ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSandboxAccountId()
+    {
+        return (Craft::parseEnv($this->sandboxAccountId) ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSandboxLicenseKey()
+    {
+        return (Craft::parseEnv($this->sandboxLicenseKey) ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getSandboxCompanyCode()
+    {
+        return (Craft::parseEnv($this->sandboxCompanyCode) ?? '');
+    }
+
     /**
      * @inheritdoc
      */
@@ -253,6 +319,7 @@ class Settings extends Model
                 ], 
                 'boolean'
             ],
+            ['enableAddressValidation', 'default', 'value' => '0'],
         ];
     }
 }
