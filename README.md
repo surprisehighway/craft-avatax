@@ -45,6 +45,8 @@ Setup and configuration is detailed below, but here's a quick overview of what y
 4. Click the *Test Connection* button to verify your connection.
 5. Click the *Save* button to save your settings.
 
+> Hint: it is recommended to use [Environment Variables](https://craftcms.com/docs/3.x/config/#environmental-configuration) for the following settings: Account ID, License Key, Company Code, Sandbox Account ID, Sandbox License Key, Sandbox Company Code to prevent sensitive info being saved in Project Config or the database. See [Config Overrides](#config-overrides) below for more examples.
+
 ![Account Settings](resources/img/plugin-settings.png)
 
 ## Configuring AvaTax Ship From Origin
@@ -159,6 +161,78 @@ You can use Craft's [plugin config file](https://docs.craftcms.com/v3/extend/plu
 
 1. Copy `config.php` from the `avataxtax` directory to your craft/config folder and rename it to `avatax.php`
 2. Update values in `avatax.php` and save.
+
+It is recommended to use ENV variables to following account settings:
+
+.ENV file:
+```
+AVATAX_ACCOUNT_ID=123456
+AVATAX_LICENSE_KEY=987654321
+AVATAX_COMPANY_CODE=MYCOMPANY
+AVATAX_SANDBOX_ACCOUNT_ID=123456
+AVATAX_SANDBOX_LICENSE_KEY=987654321
+AVATAX_SANDBOX_COMPANY_CODE=MYCOMPANY
+
+```
+
+config/avatax.php:
+```
+<?php
+
+return [
+    '*' => [
+        // The address you will be posting from.
+        'shipFromName'    => 'John Doe',
+        'shipFromStreet1' => '201 E Randolph St',
+        'shipFromStreet2' => '',
+        'shipFromStreet3' => '',
+        'shipFromCity'    => 'Chicago',
+        'shipFromState'   => 'IL',
+        'shipFromZipCode' => '60601',
+        'shipFromCountry' => 'US',
+
+        // The default Avalara Tax Code to use for Products.
+        'defaultTaxCode' => 'P0000000',
+
+        // The default Avalara Tax Code to use for Shipping.
+        'defaultShippingCode' => 'FR',
+
+        // The default Avalara Tax Code to use for Discounts.
+        'defaultDiscountCode' => 'OD010000',
+
+        // Production account information from ENV.
+        'accountId'          => '$AVATAX_ACCOUNT_ID',
+        'licenseKey'         => '$AVATAX_LICENSE_KEY',
+        'companyCode'        => '$AVATAX_COMPANY_CODE',
+
+        // Sandbox account information from ENV.
+        'sandboxAccountId'   => '$AVATAX_SANDBOX_ACCOUNT_ID',
+        'sandboxLicenseKey'  => '$AVATAX_SANDBOX_LICENSE_KEY',
+        'sandboxCompanyCode' => '$AVATAX_SANDBOX_COMPANY_CODE',
+
+        // Environment - 'production' or 'sandbox'.
+        'environment' => 'sandbox',
+
+        // AvaTax options - true or false
+        'enableTaxCalculation'    => true,
+        'enableCommitting'        => true,
+        'enableAddressValidation' => false,
+        'enablePartialRefunds'    => true,
+        
+        // Enable debugging - true or false
+        'debug' => true,
+    ],
+
+    'production' => [
+        // Environment - 'production' or 'sandbox'.
+        'environment' => 'production',
+
+        // Enable debugging - true or false
+        'debug' => false,
+    ],
+
+];
+```
 
 ## Ajax Examples
 
