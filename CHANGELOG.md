@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.5
+### Fixed
+- Fixed an error that could occur when logging a tax calculation error. [#35](https://github.com/surprisehighway/craft-avatax/issues/35)
+- Fixed an error when using a dropdown for the product tax code field. [#34](https://github.com/surprisehighway/craft-avatax/issues/34)
+
 ## 2.1.4
 ### Added
 - Allow for live and sandbox credentials to be set as ENV variables with autosuggest fields in the plugin settings to keep sensitive info out of Project Config. [#11](https://github.com/surprisehighway/craft-avatax/issues/11) [30](https://github.com/surprisehighway/craft-avatax/issues/30)
