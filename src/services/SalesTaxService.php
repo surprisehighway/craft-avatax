@@ -679,11 +679,8 @@ class SalesTaxService extends Component
             }
         }
 
-        if($this->debug)
-        {
-            // workaround to save the model as array for debug logging
-            $m = $t; $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
-        }
+        // workaround to save the model as array for debug logging
+        $m = $t; $model = $m->createAdjustmentRequest(null, null)['newTransaction'];
 
         $signature = $this->getOrderSignature($order);
         $cacheKey = 'avatax-'.$this->type.'-'.$signature;
