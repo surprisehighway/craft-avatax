@@ -600,8 +600,8 @@ class SalesTaxService extends Component
 
                 $taxCode = $defaultTaxCode;
 
-                if(isset($lineItem->purchasable->product->avataxTaxCode)) {
-                    $taxCode = $lineItem->purchasable->product->avataxTaxCode ?: $defaultTaxCode;
+                if($this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product)) {
+                    $taxCode = $this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product);
                 }
 
                 $itemCode = $lineItem->id;
@@ -639,9 +639,9 @@ class SalesTaxService extends Component
                     $discountCode = $defaultTaxCode;
 
                     // check to see if there is an Avatax Tax Code override specified
-                    if(!empty($adjustmentLineItem->purchasable->product->avataxTaxCode))
+                    if($this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product))
                     {
-                        $discountCode = $adjustmentLineItem->purchasable->product->avataxTaxCode;
+                        $discountCode = $this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product);
                     }
                 }
 
