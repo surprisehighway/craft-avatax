@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.6
+### Fixed
+- Fixed an issue where after install event breaks automated testing - thanks @davist11. [#37](https://github.com/surprisehighway/craft-avatax/issues/37)
+
 ## 2.1.5
 ### Fixed
 - Fixed an error that could occur when logging a tax calculation error. [#35](https://github.com/surprisehighway/craft-avatax/issues/35)
