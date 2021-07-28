@@ -101,8 +101,12 @@ class SalesTaxService extends Component
      *
      */
     public function createSalesOrder(Order $order)
-    {
-        if(!$this->settings->enableTaxCalculation)
+    {    
+        // check for form overrides to plugin settings and bail if disabled
+        $disabled = $this->parseOverrideParam('avatax_disable_tax_calculation');
+        $enabled = $this->parseOverrideParam('avatax_force_tax_calculation');
+
+        if((!$this->settings->enableTaxCalculation || $disabled) && !$enabled)
         {
             Avatax::info(__FUNCTION__.'(): Tax Calculation is disabled.');
 
@@ -773,5 +777,15 @@ class SalesTaxService extends Component
         $country = $this->getCountry($address);
 
         return md5($address1.$address2.$city.$state.$zipCode.$country);
+    }
+
+    /**
+     * Parse override form parameters
+     */
+    private function parseOverrideParam($param)
+    {
+        $value = Craft::$app->getRequest()->getParam($param);
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 }
