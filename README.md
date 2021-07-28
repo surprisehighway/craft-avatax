@@ -234,6 +234,34 @@ return [
 ];
 ```
 
+## Form Input Overrides
+
+You can use hidden form input fields to override the plugin Tax Calculation setting.
+
+To disable tax calculation for a form even if the plugin’s Tax Calculation setting is enabled add the following input to your form:
+
+```
+<input type="hidden" name="avatax_disable_tax_calculation" value="1">
+```
+...or the twig helper
+```
+{{ hiddenInput('avatax_disable_tax_calculation', 1) }}
+```
+
+To force tax calculation for a form even if the plugin’s Tax Calculation setting is disabled add the following input to your form:
+
+```
+<input type="hidden" name="avatax_disable_tax_calculation" value="1">
+```
+...or the twig helper
+```
+{{ hiddenInput('avatax_force_tax_calculation', 1) }}
+```
+
+> Note: This setting will not force a new API request if the Avatax response is already cached. It will just force the plugin to behave as if the setting was enabled.
+
+The values are parsed using the PHP validate filter [FILTER_VALIDATE_BOOLEAN](https://www.php.net/manual/en/filter.filters.validate.php) so values return true for "1", "true", "on" and "yes". Returns false otherwise.
+
 ## Ajax Examples
 
 There is a JSON controller endpoint you can use for AJAX lookups/validation on the front-end. Currently the only endpoints are for address validation and [CertCapture](https://certcapture6xrest.docs.apiary.io) customer lookup by customer number.
