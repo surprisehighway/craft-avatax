@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.8
+### Fixed
+- Fixed errors that occur when running from the console. [#42](https://github.com/surprisehighway/craft-avatax/issues/42)
+
 ## 2.1.7
 ### Added
 - Added the ability to override the Tax Calculation setting using hidden form inputs. [#40](https://github.com/surprisehighway/craft-avatax/issues/40)
