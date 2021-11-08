@@ -784,6 +784,10 @@ class SalesTaxService extends Component
      */
     private function parseOverrideParam($param)
     {
+        if (Craft::$app->getRequest()->getIsConsoleRequest()) {
+            return false;
+        }
+
         $value = Craft::$app->getRequest()->getParam($param);
 
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
