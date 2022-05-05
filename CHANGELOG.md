@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.0
+### Added
+- Updated Avatax SDK to version 22.3.0.
+
+### Fixed
+- Fixed Guzzle version conflict. [#44](https://github.com/surprisehighway/craft-avatax/issues/44)
+
 ## 2.1.8
 ### Fixed
 - Fixed errors that occur when running from the console. [#42](https://github.com/surprisehighway/craft-avatax/issues/42)
