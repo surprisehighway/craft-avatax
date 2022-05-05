@@ -24,7 +24,7 @@
     "require": {
         "craftcms/commerce": "^2.2.0|^3.0",
         "craftcms/cms": "^3.3",
-        "avalara/avataxclient": "^19.1"
+        "avalara/avataxclient": "^22.3.0"
     },
     "repositories": [
         {
