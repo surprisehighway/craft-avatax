@@ -311,11 +311,11 @@ class SalesTaxService extends Component
         )->withCommit();
 
         // add entity/use code if set for the customer
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()))
             {
-                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
+                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()));
             }
         }
 
@@ -453,11 +453,11 @@ class SalesTaxService extends Component
         $customerCode = (!empty($order->email)) ? $order->email : 'GUEST';
 
         // Override value from a logged-in User field if available
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerCode', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerCode', $order->getCustomer()))
             {
-                $customerCode = $this->getFieldValue('avataxCustomerCode', $order->customer->user);
+                $customerCode = $this->getFieldValue('avataxCustomerCode', $order->getCustomer());
             }
         }
 
@@ -675,11 +675,11 @@ class SalesTaxService extends Component
         $t = $t->withLineDescription('Total Shipping Cost');
 
         // add entity/use code if set for a logged-in User
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()))
             {
-                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
+                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()));
             }
         }
 
