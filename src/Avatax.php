@@ -65,7 +65,7 @@ class Avatax extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '2.0.0';
+    public string $schemaVersion = '2.0.0';
 
 
     // Public Methods
@@ -344,7 +344,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
@@ -352,7 +352,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         return Craft::$app->view->renderTemplate(
             'avatax/settings',
@@ -365,7 +365,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
         return Craft::$app->controller->redirect(UrlHelper::cpUrl('avatax/settings'));
     }
