@@ -18,7 +18,7 @@ use Craft;
 use craft\base\Component;
 
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\models\Address;
+use craft\elements\Address;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
@@ -301,12 +301,12 @@ class SalesTaxService extends Component
             'Partial refund from Craft Commerce'
         )->withAddress(
             'singleLocation',
-            $order->shippingAddress->address1,
+            $order->shippingAddress->addressLine1,
             NULL,
             NULL,
-            $order->shippingAddress->city,
+            $order->shippingAddress->locality,
             $this->getState($order->shippingAddress),
-            $order->shippingAddress->zipCode,
+            $order->shippingAddress->postalCode,
             $this->getCountry($order->shippingAddress)
         )->withCommit();
 
@@ -341,7 +341,7 @@ class SalesTaxService extends Component
     }
 
     /**
-     * @param object $address Address model craft\commerce\models\Address
+     * @param object $address Address model craft\elements\Address
      * @return boolean
      *
      *  From any other plugin file, call it like this:
@@ -399,13 +399,13 @@ class SalesTaxService extends Component
             $request = new AddressValidationInfo();
 
             $request->textCase = 'Mixed';
-            $request->line1 = $address->address1;
-            $request->line2 = $address->address2;
+            $request->line1 = $address->addressLine1;
+            $request->line2 = $address->addressLine2;
             $request->line3 = '';
-            $request->city = $address->city;
+            $request->city = $address->locality;
             $request->region = $this->getState($address);
             $request->country = $this->getCountry($address);
-            $request->postalCode = $address->zipCode;
+            $request->postalCode = $address->postalCode;
             $request->latitude = '';
             $request->longitude = '';
 
@@ -587,12 +587,12 @@ class SalesTaxService extends Component
             )
             ->withAddress(
                 'shipTo',
-                $order->shippingAddress->address1,
+                $order->shippingAddress->addressLine1,
                 NULL,
                 NULL,
-                $order->shippingAddress->city,
+                $order->shippingAddress->locality,
                 $this->getState($order->shippingAddress),
-                $order->shippingAddress->zipCode,
+                $order->shippingAddress->postalCode,
                 $this->getCountry($order->shippingAddress)
             );
 
@@ -744,13 +744,13 @@ class SalesTaxService extends Component
         $tax = $order->getTotalTax();
         $total = $order->totalPrice;
 
-        $address1 = $order->shippingAddress->address1;
-        $address2 = $order->shippingAddress->address2;
-        $city = $order->shippingAddress->city;
+        $addressLine1 = $order->shippingAddress->addressLine1;
+        $addressLine2 = $order->shippingAddress->addressLine2;
+        $city = $order->shippingAddress->locality;
         $state = $this->getState($order->shippingAddress);
-        $zipCode = $order->shippingAddress->zipCode;
+        $zipCode = $order->shippingAddress->postalCode;
         $country = $this->getCountry($order->shippingAddress);
-        $address = $address1.$address2.$city.$state.$zipCode.$country;
+        $address = $addressLine1.$addressLine2.$city.$state.$zipCode.$country;
 
         $lineItems = '';
         foreach ($order->lineItems as $lineItem)
@@ -769,14 +769,14 @@ class SalesTaxService extends Component
      */
     private function getAddressSignature(Address $address)
     {
-        $address1 = $address->address1;
-        $address2 = $address->address2;
-        $city = $address->city;
+        $addressLine1 = $address->addressLine1;
+        $addressLine2 = $address->addressLine2;
+        $city = $address->locality;
         $state = $this->getState($address);
-        $zipCode = $address->zipCode;
+        $zipCode = $address->postalCode;
         $country = $this->getCountry($address);
 
-        return md5($address1.$address2.$city.$state.$zipCode.$country);
+        return md5($addressLine1.$addressLine2.$city.$state.$zipCode.$country);
     }
 
     /**

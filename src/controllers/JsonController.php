@@ -17,7 +17,7 @@ use surprisehighway\avatax\services\CertCaptureService;
 use Craft;
 use craft\web\Controller;
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\models\Address;
+use craft\elements\Address;
 
 /**
  * @author    Surprise Highway
@@ -54,21 +54,16 @@ class JsonController extends Controller
 
         // Shared attributes
         $attributes = [
-            'attention',
-            'title',
-            'firstName',
-            'lastName',
-            'address1',
-            'address2',
-            'city',
-            'zipCode',
-            'phone',
+            'fullName',
+            'addressLine1',
+            'addressLine2',
+            'locality',
+            'postalCode',
             'alternativePhone',
-            'businessName',
-            'businessTaxId',
-            'businessId',
-            'countryId',
-            'stateValue'
+            'organization',
+            'organizationTaxId',
+            'countryCode',
+            'administrativeArea'
         ];
 
         foreach ($attributes as $attr) 
