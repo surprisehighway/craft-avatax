@@ -305,9 +305,9 @@ class SalesTaxService extends Component
             NULL,
             NULL,
             $order->shippingAddress->locality,
-            $this->getState($order->shippingAddress),
+            $order->shippingAddress->administrativeArea,
             $order->shippingAddress->postalCode,
-            $this->getCountry($order->shippingAddress)
+            $order->shippingAddress->countryCode
         )->withCommit();
 
         // add entity/use code if set for the customer
@@ -403,8 +403,8 @@ class SalesTaxService extends Component
             $request->line2 = $address->addressLine2;
             $request->line3 = '';
             $request->city = $address->locality;
-            $request->region = $this->getState($address);
-            $request->country = $this->getCountry($address);
+            $request->region = $address->administrativeArea;
+            $request->country = $address->countryCode;
             $request->postalCode = $address->postalCode;
             $request->latitude = '';
             $request->longitude = '';
@@ -591,9 +591,9 @@ class SalesTaxService extends Component
                 NULL,
                 NULL,
                 $order->shippingAddress->locality,
-                $this->getState($order->shippingAddress),
+                $order->shippingAddress->administrativeArea,
                 $order->shippingAddress->postalCode,
-                $this->getCountry($order->shippingAddress)
+                $order->shippingAddress->countryCode
             );
 
         // Add each line item to the transaction
@@ -718,22 +718,6 @@ class SalesTaxService extends Component
     }
 
     /**
-     * Resolve the state based on available attributes.
-     */
-    private function getState(Address $address)
-    {
-        return $address->stateId ? $address->getState()->abbreviation : $address->getStateText();
-    }
-
-    /**
-     * Resolve the country based on available attributes.
-     */
-    private function getCountry(Address $address)
-    {
-        return $address->countryId ? $address->getCountry()->iso : $address->getCountryText();
-    }
-
-    /**
      * Returns a hash derived from the order's properties.
      */
     private function getOrderSignature(Order $order)
@@ -747,9 +731,9 @@ class SalesTaxService extends Component
         $addressLine1 = $order->shippingAddress->addressLine1;
         $addressLine2 = $order->shippingAddress->addressLine2;
         $city = $order->shippingAddress->locality;
-        $state = $this->getState($order->shippingAddress);
+        $state = $order->shippingAddress->administrativeArea;
         $zipCode = $order->shippingAddress->postalCode;
-        $country = $this->getCountry($order->shippingAddress);
+        $country = $order->shippingAddress->countryCode;
         $address = $addressLine1.$addressLine2.$city.$state.$zipCode.$country;
 
         $lineItems = '';
@@ -774,7 +758,7 @@ class SalesTaxService extends Component
         $city = $address->locality;
         $state = $this->getState($address);
         $zipCode = $address->postalCode;
-        $country = $this->getCountry($address);
+        $country = $address->countryCode;
 
         return md5($addressLine1.$addressLine2.$city.$state.$zipCode.$country);
     }
