@@ -169,10 +169,10 @@ class Avatax extends Plugin
      * Raised before address has been saved.
      * Validate an address in avatax.
      */
-    public function onBeforeSaveAddress(AddressEvent $event)
+    public function onBeforeSaveAddress(ModelEvent $event)
     {
-        // @var AddressEvent $address
-        $address = $event->address;
+        // @var Address $address
+        $address = $event->sender;
 
         if(Craft::$app->getRequest()->getIsSiteRequest()) {
             $this->SalesTaxService->validateAddress($address);
