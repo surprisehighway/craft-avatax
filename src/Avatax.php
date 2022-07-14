@@ -20,6 +20,7 @@ use craft\base\Plugin;
 use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\ModelEvent;
 use craft\fields\Dropdown;
 use craft\fields\PlainText;
 use craft\helpers\UrlHelper;
@@ -33,7 +34,7 @@ use craft\commerce\events\AddressEvent;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\models\TaxCategory;
 use craft\commerce\models\Transaction;
-use craft\commerce\services\Addresses;
+use craft\elements\Address;
 use craft\commerce\services\OrderAdjustments;
 use craft\commerce\services\Payments;
 use craft\commerce\services\TaxCategories;
@@ -125,9 +126,9 @@ class Avatax extends Plugin
         
         // Register address save event listener
         Event::on(
-            Addresses::class, 
-            Addresses::EVENT_BEFORE_SAVE_ADDRESS, 
-            function(AddressEvent $event) {
+            Address::class, 
+            Address::EVENT_BEFORE_SAVE, 
+            function(ModelEvent $event) {
                 $this->onBeforeSaveAddress($event);
             }
         );
