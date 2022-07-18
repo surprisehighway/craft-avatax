@@ -31,7 +31,7 @@ class BaseController extends Controller
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-    protected $allowAnonymous = false;
+    protected array|int|bool $allowAnonymous = false;
 
     // Public Methods
     // =========================================================================

@@ -20,6 +20,7 @@ use craft\base\Plugin;
 use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\ModelEvent;
 use craft\fields\Dropdown;
 use craft\fields\PlainText;
 use craft\helpers\UrlHelper;
@@ -33,7 +34,7 @@ use craft\commerce\events\AddressEvent;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\models\TaxCategory;
 use craft\commerce\models\Transaction;
-use craft\commerce\services\Addresses;
+use craft\elements\Address;
 use craft\commerce\services\OrderAdjustments;
 use craft\commerce\services\Payments;
 use craft\commerce\services\TaxCategories;
@@ -65,7 +66,7 @@ class Avatax extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '2.0.0';
+    public string $schemaVersion = '2.0.0';
 
 
     // Public Methods
@@ -125,9 +126,9 @@ class Avatax extends Plugin
         
         // Register address save event listener
         Event::on(
-            Addresses::class, 
-            Addresses::EVENT_BEFORE_SAVE_ADDRESS, 
-            function(AddressEvent $event) {
+            Address::class, 
+            Address::EVENT_BEFORE_SAVE, 
+            function(ModelEvent $event) {
                 $this->onBeforeSaveAddress($event);
             }
         );
@@ -168,10 +169,10 @@ class Avatax extends Plugin
      * Raised before address has been saved.
      * Validate an address in avatax.
      */
-    public function onBeforeSaveAddress(AddressEvent $event)
+    public function onBeforeSaveAddress(ModelEvent $event)
     {
-        // @var AddressEvent $address
-        $address = $event->address;
+        // @var Address $address
+        $address = $event->sender;
 
         if(Craft::$app->getRequest()->getIsSiteRequest()) {
             $this->SalesTaxService->validateAddress($address);
@@ -344,7 +345,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
@@ -352,7 +353,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         return Craft::$app->view->renderTemplate(
             'avatax/settings',
@@ -365,7 +366,7 @@ class Avatax extends Plugin
     /**
      * @inheritdoc
      */
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
         return Craft::$app->controller->redirect(UrlHelper::cpUrl('avatax/settings'));
     }

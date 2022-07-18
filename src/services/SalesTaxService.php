@@ -18,7 +18,7 @@ use Craft;
 use craft\base\Component;
 
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\models\Address;
+use craft\elements\Address;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
@@ -60,7 +60,7 @@ class SalesTaxService extends Component
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -301,21 +301,21 @@ class SalesTaxService extends Component
             'Partial refund from Craft Commerce'
         )->withAddress(
             'singleLocation',
-            $order->shippingAddress->address1,
+            $order->shippingAddress->addressLine1,
             NULL,
             NULL,
-            $order->shippingAddress->city,
-            $this->getState($order->shippingAddress),
-            $order->shippingAddress->zipCode,
-            $this->getCountry($order->shippingAddress)
+            $order->shippingAddress->locality,
+            $order->shippingAddress->administrativeArea,
+            $order->shippingAddress->postalCode,
+            $order->shippingAddress->countryCode
         )->withCommit();
 
         // add entity/use code if set for the customer
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()))
             {
-                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
+                $tb = $tb->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()));
             }
         }
 
@@ -341,7 +341,7 @@ class SalesTaxService extends Component
     }
 
     /**
-     * @param object $address Address model craft\commerce\models\Address
+     * @param object $address Address model craft\elements\Address
      * @return boolean
      *
      *  From any other plugin file, call it like this:
@@ -399,13 +399,13 @@ class SalesTaxService extends Component
             $request = new AddressValidationInfo();
 
             $request->textCase = 'Mixed';
-            $request->line1 = $address->address1;
-            $request->line2 = $address->address2;
+            $request->line1 = $address->addressLine1;
+            $request->line2 = $address->addressLine2;
             $request->line3 = '';
-            $request->city = $address->city;
-            $request->region = $this->getState($address);
-            $request->country = $this->getCountry($address);
-            $request->postalCode = $address->zipCode;
+            $request->city = $address->locality;
+            $request->region = $address->administrativeArea;
+            $request->country = $address->countryCode;
+            $request->postalCode = $address->postalCode;
             $request->latitude = '';
             $request->longitude = '';
 
@@ -453,11 +453,11 @@ class SalesTaxService extends Component
         $customerCode = (!empty($order->email)) ? $order->email : 'GUEST';
 
         // Override value from a logged-in User field if available
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerCode', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerCode', $order->getCustomer()))
             {
-                $customerCode = $this->getFieldValue('avataxCustomerCode', $order->customer->user);
+                $customerCode = $this->getFieldValue('avataxCustomerCode', $order->getCustomer());
             }
         }
 
@@ -587,13 +587,13 @@ class SalesTaxService extends Component
             )
             ->withAddress(
                 'shipTo',
-                $order->shippingAddress->address1,
+                $order->shippingAddress->addressLine1,
                 NULL,
                 NULL,
-                $order->shippingAddress->city,
-                $this->getState($order->shippingAddress),
-                $order->shippingAddress->zipCode,
-                $this->getCountry($order->shippingAddress)
+                $order->shippingAddress->locality,
+                $order->shippingAddress->administrativeArea,
+                $order->shippingAddress->postalCode,
+                $order->shippingAddress->countryCode
             );
 
         // Add each line item to the transaction
@@ -675,11 +675,11 @@ class SalesTaxService extends Component
         $t = $t->withLineDescription('Total Shipping Cost');
 
         // add entity/use code if set for a logged-in User
-        if(!is_null($order->customer->user))
+        if(!is_null($order->getCustomer()))
         {
-            if($this->getFieldValue('avataxCustomerUsageType', $order->customer->user))
+            if($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()))
             {
-                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->customer->user));
+                $t = $t->withEntityUseCode($this->getFieldValue('avataxCustomerUsageType', $order->getCustomer()));
             }
         }
 
@@ -718,22 +718,6 @@ class SalesTaxService extends Component
     }
 
     /**
-     * Resolve the state based on available attributes.
-     */
-    private function getState(Address $address)
-    {
-        return $address->stateId ? $address->getState()->abbreviation : $address->getStateText();
-    }
-
-    /**
-     * Resolve the country based on available attributes.
-     */
-    private function getCountry(Address $address)
-    {
-        return $address->countryId ? $address->getCountry()->iso : $address->getCountryText();
-    }
-
-    /**
      * Returns a hash derived from the order's properties.
      */
     private function getOrderSignature(Order $order)
@@ -744,13 +728,13 @@ class SalesTaxService extends Component
         $tax = $order->getTotalTax();
         $total = $order->totalPrice;
 
-        $address1 = $order->shippingAddress->address1;
-        $address2 = $order->shippingAddress->address2;
-        $city = $order->shippingAddress->city;
-        $state = $this->getState($order->shippingAddress);
-        $zipCode = $order->shippingAddress->zipCode;
-        $country = $this->getCountry($order->shippingAddress);
-        $address = $address1.$address2.$city.$state.$zipCode.$country;
+        $addressLine1 = $order->shippingAddress->addressLine1;
+        $addressLine2 = $order->shippingAddress->addressLine2;
+        $city = $order->shippingAddress->locality;
+        $state = $order->shippingAddress->administrativeArea;
+        $zipCode = $order->shippingAddress->postalCode;
+        $country = $order->shippingAddress->countryCode;
+        $address = $addressLine1.$addressLine2.$city.$state.$zipCode.$country;
 
         $lineItems = '';
         foreach ($order->lineItems as $lineItem)
@@ -769,14 +753,14 @@ class SalesTaxService extends Component
      */
     private function getAddressSignature(Address $address)
     {
-        $address1 = $address->address1;
-        $address2 = $address->address2;
-        $city = $address->city;
+        $addressLine1 = $address->addressLine1;
+        $addressLine2 = $address->addressLine2;
+        $city = $address->locality;
         $state = $this->getState($address);
-        $zipCode = $address->zipCode;
-        $country = $this->getCountry($address);
+        $zipCode = $address->postalCode;
+        $country = $address->countryCode;
 
-        return md5($address1.$address2.$city.$state.$zipCode.$country);
+        return md5($addressLine1.$addressLine2.$city.$state.$zipCode.$country);
     }
 
     /**
