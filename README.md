@@ -8,7 +8,7 @@ Calculate and add sales tax to an order's base tax using Avalara's AvaTax servic
 
 ## Requirements
 
-This plugin requires Craft 4 and Craft Commerce 4.0 or later and Craft Commerce 4.0 or later.
+This plugin requires Craft 4 and Commerce 4.0 or later.
 
 ## Installation
 
