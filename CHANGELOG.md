@@ -4,35 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.0.0
+## 3.0.0 - 2022-07-18
 ### Added
 - Craft 4 compatibility.
 
-## 2.2.0
+## 2.2.0 - 2022-05-05
 ### Added
 - Updated Avatax SDK to version 22.3.0.
 
 ### Fixed
 - Fixed Guzzle version conflict. [#44](https://github.com/surprisehighway/craft-avatax/issues/44)
 
-## 2.1.8
+## 2.1.8 - 2021-11-8
 ### Fixed
 - Fixed errors that occur when running from the console. [#42](https://github.com/surprisehighway/craft-avatax/issues/42)
 
-## 2.1.7
+## 2.1.7 - 2021-07-28
 ### Added
 - Added the ability to override the Tax Calculation setting using hidden form inputs. [#40](https://github.com/surprisehighway/craft-avatax/issues/40)
 
-## 2.1.6
+## 2.1.6 - 2021-07-15
 ### Fixed
 - Fixed an issue where after install event breaks automated testing - thanks @davist11. [#37](https://github.com/surprisehighway/craft-avatax/issues/37)
 
-## 2.1.5
+## 2.1.5 - 2021-07-07
 ### Fixed
 - Fixed an error that could occur when logging a tax calculation error. [#35](https://github.com/surprisehighway/craft-avatax/issues/35)
 - Fixed an error when using a dropdown for the product tax code field. [#34](https://github.com/surprisehighway/craft-avatax/issues/34)
 
-## 2.1.4
+## 2.1.4 - 202105-21
 ### Added
 - Allow for live and sandbox credentials to be set as ENV variables with autosuggest fields in the plugin settings to keep sensitive info out of Project Config. [#11](https://github.com/surprisehighway/craft-avatax/issues/11) [30](https://github.com/surprisehighway/craft-avatax/issues/30)
 - Update config override example to default to multi-environment settings with ENV examples.
@@ -41,17 +41,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - Better error handling. No longer throw exceptions on the front end but log more complete error responses. [#29](https://github.com/surprisehighway/craft-avatax/issues/29) [#31](https://github.com/surprisehighway/craft-avatax/issues/31)
 
-## 2.1.3
+## 2.1.3 - 2021-01-28
 ### Fixed
 - Fixed an issue where updating the shipping state did not refresh the cached order. [#27](https://github.com/surprisehighway/craft-avatax/issues/27)
 
-## 2.1.2
+## 2.1.2 - 2021-01-05
 ### Fixed
 - Skip address validation for estimated addresses to avoid errors with incomplete addresses. [#22](https://github.com/surprisehighway/craft-avatax/issues/22)
 - Fixed an issue where updating the shipping state did not refresh the cached tax. [#24](https://github.com/surprisehighway/craft-avatax/issues/24)
 - Fixed an issue where addresses returned by Avalara as unresolved were still considered valid. [#25](https://github.com/surprisehighway/craft-avatax/issues/25)
 
-## 2.1.1
+## 2.1.1 - 2020-06-08
 ### Fixed
 - Fixed an issue where settings fields were readonly even when not being overridden by config file. [#20](https://github.com/surprisehighway/craft-avatax/issues/20)
 
