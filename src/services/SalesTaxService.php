@@ -756,7 +756,7 @@ class SalesTaxService extends Component
         $addressLine1 = $address->addressLine1;
         $addressLine2 = $address->addressLine2;
         $city = $address->locality;
-        $state = $this->getState($address);
+        $state = $address->administrativeArea;
         $zipCode = $address->postalCode;
         $country = $address->countryCode;
 
