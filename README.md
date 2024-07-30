@@ -1,4 +1,4 @@
-# Avatax plugin for Craft CMS 4.x
+# Avatax plugin for Craft CMS 5.x
 
 Calculate and add sales tax to an order's base tax using Avalara's AvaTax service.
 
@@ -8,7 +8,7 @@ Calculate and add sales tax to an order's base tax using Avalara's AvaTax servic
 
 ## Requirements
 
-This plugin requires Craft 4 and Commerce 4.0 or later.
+This plugin requires Craft 5 and Commerce 5 or later.
 
 ## Installation
 
