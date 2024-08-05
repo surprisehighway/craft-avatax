@@ -51,7 +51,7 @@ Avatax.settings = {
 				'<div class="body">'+message+'</div>' +
 				'<div class="footer">' +
 					'<div class="buttons right">' +
-						'<input type="button" class="btn modal-cancel" value="Done"/>' +
+						'<button type="button" class="btn modal-cancel"><label>Done</label></button>' +
 					'</div>' +
 				'</div>' +
 			'</div>';

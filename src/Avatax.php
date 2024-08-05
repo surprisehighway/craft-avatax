@@ -24,7 +24,6 @@ use craft\events\ModelEvent;
 use craft\fields\Dropdown;
 use craft\fields\PlainText;
 use craft\helpers\UrlHelper;
-use craft\models\FieldGroup;
 use craft\services\Plugins;
 use craft\web\UrlManager;
 
@@ -231,83 +230,69 @@ class Avatax extends Plugin
             }
         }
 
-        // Create an "avatax field group"
-        $group = new FieldGroup();
-        $group->name = 'Avatax';
+        // Create avataxTaxCode field
+        $field = Craft::$app->fields->createField([
+            'name'           => 'AvaTax Tax Code',
+            'handle'         => 'avataxTaxCode',
+            'type'           => PlainText::class,
+            'instructions'   => 'Specify an [Avalara Tax Code](https://taxcode.avatax.avalara.com) to use for this product.',
+            'settings' => [
+                'placeholder' => '',
+                'multiline'   => false,
+                'initialRows' => '4',
+                'charLimit'   => null,
+            ]
+        ]);
 
-        if( Craft::$app->fields->saveGroup($group) )
+        if (Craft::$app->fields->saveField($field))
         {
-            Craft::info('Avatax field group created successfully.', 'avatax');
-
-            // Create avataxTaxCode field
-            $field = Craft::$app->fields->createField([
-                'groupId'        => $group->id,
-                'name'           => 'AvaTax Tax Code',
-                'handle'         => 'avataxTaxCode',
-                'type'           => PlainText::class,
-                'instructions'   => 'Specify an [Avalara Tax Code](https://taxcode.avatax.avalara.com) to use for this product.',
-                'settings' => [
-                    'placeholder' => '',
-                    'multiline'   => false,
-                    'initialRows' => '4',
-                    'charLimit'   => null,
-                ]
-            ]);
-
-            if (Craft::$app->fields->saveField($field))
-            {
-                Craft::info('Avatax Tax Code field created successfully.', 'avatax');
-            }
-            else
-            {
-                Craft::warning('Could not save the Avatax Tax Code field.', 'avatax');
-            }
-
-            // Create avataxCustomerUsageType field
-            $field = Craft::$app->fields->createField([
-                'groupId'      => $group->id,
-                'name'         => 'AvaTax Customer Usage Type',
-                'handle'       => 'avataxCustomerUsageType',
-                'type'         => Dropdown::class,
-                'instructions' => 'Select an [Entity/Use Code](https://help.avalara.com/000_Avalara_AvaTax/Exemption_Reason_Matrices_for_US_and_Canada) to exempt this customer from tax.',
-                'settings' => [
-                    'options' => [
-                        ['label' => '', 'value' => '', 'default' => ''],
-                        ['label' => 'A. Federal government (United States)', 'value' => 'A', 'default' => ''],
-                        ['label' => 'B. State government (United States)', 'value' => 'B', 'default' => ''],
-                        ['label' => 'C. Tribe / Status Indian / Indian Band (both)', 'value' => 'C', 'default' => ''],
-                        ['label' => 'D. Foreign diplomat (both)', 'value' => 'D', 'default' => ''],
-                        ['label' => 'E. Charitable or benevolent org (both)', 'value' => 'E', 'default' => ''],
-                        ['label' => 'F. Religious or educational org (both)', 'value' => 'F', 'default' => ''],
-                        ['label' => 'G. Resale (both)', 'value' => 'G', 'default' => ''],
-                        ['label' => 'H. Commercial agricultural production (both)', 'value' => 'H', 'default' => ''],
-                        ['label' => 'I. Industrial production / manufacturer (both)', 'value' => 'I', 'default' => ''],
-                        ['label' => 'J. Direct pay permit (United States)', 'value' => 'J', 'default' => ''],
-                        ['label' => 'K. Direct mail (United States)', 'value' => 'K', 'default' => ''],
-                        ['label' => 'L. Other (both)', 'value' => 'L', 'default' => ''],
-                        ['label' => 'M. Not Used', 'value' => 'M', 'default' => ''],
-                        ['label' => 'N. Local government (United States)', 'value' => 'N', 'default' => ''],
-                        ['label' => 'O. Not Used', 'value' => 'O', 'default' => ''],
-                        ['label' => 'P. Commercial aquaculture (Canada)', 'value' => 'P', 'default' => ''],
-                        ['label' => 'Q. Commercial Fishery (Canada)', 'value' => 'Q', 'default' => ''],
-                        ['label' => 'R. Non-resident (Canada)', 'value' => 'R', 'default' => ''],
-                    ]
-                ]
-            ]);
-
-            if (Craft::$app->fields->saveField($field))
-            {
-                Craft::info('Avatax Customer Usage Type field created successfully.', 'Avatax');
-            }
-            else
-            {
-                Craft::warning('Could not save the Avatax Customer Usage Type field.', 'Avatax');
-            }
+            Craft::info('Avatax Tax Code field created successfully.', 'avatax');
         }
         else
         {
-            Craft::warning('Could not save the Avatax field group. ', 'Avatax');
+            Craft::warning('Could not save the Avatax Tax Code field.', 'avatax');
         }
+
+        // Create avataxCustomerUsageType field
+        $field = Craft::$app->fields->createField([
+            'name'         => 'AvaTax Customer Usage Type',
+            'handle'       => 'avataxCustomerUsageType',
+            'type'         => Dropdown::class,
+            'instructions' => 'Select an [Entity/Use Code](https://knowledge.avalara.com/bundle/dqa1657870670369_dqa1657870670369/page/Exempt_reason_matrix_for_the_U.S._and_Canada_entity_use_code_list.html#pus1650667484575) to exempt this customer from tax.',
+            'settings' => [
+                'options' => [
+                    ['label' => '', 'value' => '', 'default' => ''],
+                    ['label' => 'A. Federal government (United States)', 'value' => 'A', 'default' => ''],
+                    ['label' => 'B. State government (United States)', 'value' => 'B', 'default' => ''],
+                    ['label' => 'C. Tribe / Status Indian / Indian Band (both)', 'value' => 'C', 'default' => ''],
+                    ['label' => 'D. Foreign diplomat (both)', 'value' => 'D', 'default' => ''],
+                    ['label' => 'E. Charitable or benevolent org (both)', 'value' => 'E', 'default' => ''],
+                    ['label' => 'F. Religious or educational org (both)', 'value' => 'F', 'default' => ''],
+                    ['label' => 'G. Resale (both)', 'value' => 'G', 'default' => ''],
+                    ['label' => 'H. Commercial agricultural production (both)', 'value' => 'H', 'default' => ''],
+                    ['label' => 'I. Industrial production / manufacturer (both)', 'value' => 'I', 'default' => ''],
+                    ['label' => 'J. Direct pay permit (United States)', 'value' => 'J', 'default' => ''],
+                    ['label' => 'K. Direct mail (United States)', 'value' => 'K', 'default' => ''],
+                    ['label' => 'L. Other (both)', 'value' => 'L', 'default' => ''],
+                    ['label' => 'M. Not Used', 'value' => 'M', 'default' => ''],
+                    ['label' => 'N. Local government (United States)', 'value' => 'N', 'default' => ''],
+                    ['label' => 'O. Not Used', 'value' => 'O', 'default' => ''],
+                    ['label' => 'P. Commercial aquaculture (Canada)', 'value' => 'P', 'default' => ''],
+                    ['label' => 'Q. Commercial Fishery (Canada)', 'value' => 'Q', 'default' => ''],
+                    ['label' => 'R. Non-resident (Canada)', 'value' => 'R', 'default' => ''],
+                ]
+            ]
+        ]);
+
+        if (Craft::$app->fields->saveField($field))
+        {
+            Craft::info('Avatax Customer Usage Type field created successfully.', 'Avatax');
+        }
+        else
+        {
+            Craft::warning('Could not save the Avatax Customer Usage Type field.', 'Avatax');
+        }
+
 
         if (Craft::$app->getRequest()->getIsConsoleRequest()) {
             return;
