@@ -79,6 +79,10 @@ After completing the installation and configuration, AvaTax will calculate and a
 
 ![Avatax Tax Category Settings](resources/img/product-category.png)
 
+> **Craft 5 Hint:** The Tax Category dropdown is no longer in the product details sidebar. You have to double-click a Variant to see see the Tax and Shipping Categories in the Variant flyout (and make sure the sidebar is visible). If you don't need to be able to use different Tax Categories for different products make sure Avatax is your default.
+
+![Avatax Tax Category Settings](resources/img/product-category-craft5.png)
+
 ## Tax Codes
 
 *E.g. 'P0000000' - Tangible personal property (TPP)*.
