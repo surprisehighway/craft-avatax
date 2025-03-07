@@ -19,6 +19,7 @@ use craft\base\Component;
 
 use craft\commerce\Plugin as Commerce;
 use craft\elements\Address;
+use craft\commerce\enums\LineItemType;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
@@ -597,11 +598,13 @@ class SalesTaxService extends Component
             if($lineItem->taxCategory->handle === 'avatax'){
 
                 $taxCode = $defaultTaxCode;
-
-                if($this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product)) {
+                
+                $purchasableId = $lineItem->purchasableId;
+                
+                if($purchasableId && $this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product)) {
                     $taxCode = $this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product);
                 }
-
+                                
                 $itemCode = $lineItem->id;
 
                 if(!empty($lineItem->sku)) {
@@ -617,7 +620,9 @@ class SalesTaxService extends Component
                 );
 
                // add human-readable description to line item
-               $t = $t->withLineDescription($lineItem->purchasable->product->title);
+               if($purchasableId) {
+                $t = $t->withLineDescription($lineItem->purchasable->product->title);
+               }
            }
         }
 
@@ -635,11 +640,13 @@ class SalesTaxService extends Component
                 if ($adjustmentLineItem = $adjustment->getLineItem())
                 {
                     $discountCode = $defaultTaxCode;
+                    
+                    $purchasableId = $adjustmentLineItem->purchasableId;
 
                     // check to see if there is an Avatax Tax Code override specified
-                    if($this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product))
+                    if(purchasableId && $this->getFieldValue('avataxTaxCode', $adjustmentLineItem->purchasable->product))
                     {
-                        $discountCode = $this->getFieldValue('avataxTaxCode', $lineItem->purchasable->product);
+                        $discountCode = $this->getFieldValue('avataxTaxCode', $adjustmentLineItem->purchasable->product);
                     }
                 }
 
