@@ -644,7 +644,7 @@ class SalesTaxService extends Component
                     $purchasableId = $adjustmentLineItem->purchasableId;
 
                     // check to see if there is an Avatax Tax Code override specified
-                    if(purchasableId && $this->getFieldValue('avataxTaxCode', $adjustmentLineItem->purchasable->product))
+                    if($purchasableId && $this->getFieldValue('avataxTaxCode', $adjustmentLineItem->purchasable->product))
                     {
                         $discountCode = $this->getFieldValue('avataxTaxCode', $adjustmentLineItem->purchasable->product);
                     }

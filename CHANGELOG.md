@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.2 - 2025-03-11
+### Fixed
+- Fixed an error that occured when attempting to recalculate the admin order. [#55](https://github.com/surprisehighway/craft-avatax/issues/55)
+
 ## 4.0.1 - 2025-03-07
 ### Fixed
 - Fixed an error that occured when attempting to add a custom line item. [#53](https://github.com/surprisehighway/craft-avatax/issues/53)
