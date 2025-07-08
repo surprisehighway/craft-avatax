@@ -223,7 +223,7 @@ class SalesTaxService extends Component
             $transactionCode,
             null,
             null,
-            'true',
+            true,
             $model
         );
 
