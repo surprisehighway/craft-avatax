@@ -27,6 +27,7 @@ use craft\commerce\helpers\Currency;
 
 use yii\base\Exception;
 use yii\log\Logger;
+use surprisehighway\avatax\events\BeforeCreateSalesOrderEvent;
 
 /**
  * @author    Surprise Highway
@@ -53,6 +54,12 @@ class SalesTaxService extends Component
      * @var string The type of commit (order or invoice)
      */
     public $type;
+
+    /**
+     * @event BeforeCreateSalesOrderEvent Event raised before creating an AvaTax sales order.
+     * Handlers may set $event->isValid = false to cancel tax calculation.
+     */
+    public const EVENT_BEFORE_CREATE_SALES_ORDER = 'beforeCreateSalesOrder';
 
 
     // Public Methods
@@ -106,6 +113,20 @@ class SalesTaxService extends Component
         // check for form overrides to plugin settings and bail if disabled
         $disabled = $this->parseOverrideParam('avatax_disable_tax_calculation');
         $enabled = $this->parseOverrideParam('avatax_force_tax_calculation');
+
+        // Trigger cancelable event before any external calls to allow disabling tax calculation
+        if ($this->hasEventHandlers(self::EVENT_BEFORE_CREATE_SALES_ORDER)) {
+            $event = new BeforeCreateSalesOrderEvent([
+                'order' => $order,
+                'isValid' => true,
+            ]);
+            $this->trigger(self::EVENT_BEFORE_CREATE_SALES_ORDER, $event);
+
+            if ($event->isValid === false) {
+                Avatax::info(__FUNCTION__.'(): Tax calculation canceled by event handler.');
+                return false;
+            }
+        }
 
         if((!$this->settings->enableTaxCalculation || $disabled) && !$enabled)
         {
