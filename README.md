@@ -402,7 +402,7 @@ Event::on(
         if (!order->myCustomField === true) {
             $event->isValid = false; // Cancel AvaTax calculation for this order
 
-            $event->isHandled = true; // Optionally prevent other event handlers from overriding.
+            $event->handled = true; // Optionally prevent other event handlers from overriding.
         }
     }
 );
