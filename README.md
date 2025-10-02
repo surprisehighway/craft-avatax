@@ -382,6 +382,31 @@ This example demonstrates a potential button click handler that triggers a custo
 {% endjs %}
 
 ```
+## Events
+
+You can cancel AvaTax tax calculation for a given Commerce `Order` by listening for a cancelable event fired just before calculation begins.
+
+```php
+<?php
+
+use yii\base\Event;
+use surprisehighway\avatax\events\BeforeCreateSalesOrderEvent;
+use surprisehighway\avatax\services\SalesTaxService;
+
+Event::on(
+    SalesTaxService::class,
+    SalesTaxService::EVENT_BEFORE_CREATE_SALES_ORDER,
+    function (BeforeCreateSalesOrderEvent $event) {
+        // Example rule: skip tax calculation for carts in a specific state
+        $order = $event->order;
+        if (!order->myCustomField === true) {
+            $event->isValid = false; // Cancel AvaTax calculation for this order
+
+            $event->isHandled = true; // Optionally prevent other event handlers from overriding.
+        }
+    }
+);
+```
 
 ## AvaTax Plugin Roadmap
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- `SalesTaxService::EVENT_BEFORE_CREATE_SALES_ORDER`. [#58](https://github.com/surprisehighway/craft-avatax/issues/)
+
+
 ## 4.0.2 - 2025-03-11
 ### Fixed
 - Fixed an error that occured when attempting to recalculate the admin order. [#55](https://github.com/surprisehighway/craft-avatax/issues/55)
