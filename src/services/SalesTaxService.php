@@ -11,6 +11,7 @@
 namespace surprisehighway\avatax\services;
 
 use surprisehighway\avatax\Avatax;
+use surprisehighway\avatax\events\BeforeCreateSalesOrderEvent;
 use Avalara\AvaTaxClient;
 use Avalara\AddressValidationInfo;
 
@@ -27,7 +28,6 @@ use craft\commerce\helpers\Currency;
 
 use yii\base\Exception;
 use yii\log\Logger;
-use surprisehighway\avatax\events\BeforeCreateSalesOrderEvent;
 
 /**
  * @author    Surprise Highway
