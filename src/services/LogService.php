@@ -71,8 +71,11 @@ class LogService extends Component
 			'message' => $message,
 			'data' => $data,
 		];
-
-		FileHelper::writeToFile($this->logFile, json_encode($log).PHP_EOL, ['append' => true]);
+		try {
+			FileHelper::writeToFile($this->logFile, json_encode($log).PHP_EOL, ['append' => true]);
+		} catch (Exception $e) {
+			Craft::error($e->getMessage(), __METHOD__);
+		}
 	}
 
 	/**
