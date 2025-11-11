@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.4 - 2025-11-11
+### Fixed
+- Fixed an error that could occur during logging. [#61](https://github.com/surprisehighway/craft-avatax/pull/61)
+
 ## 4.0.3 - 2025-10-01
 ### Added
 - Added `SalesTaxService::EVENT_BEFORE_CREATE_SALES_ORDER`. [#58](https://github.com/surprisehighway/craft-avatax/issues/)
