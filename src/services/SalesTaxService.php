@@ -589,8 +589,8 @@ class SalesTaxService extends Component
         $defaultTaxCode = $this->settings['defaultTaxCode'];
         $defaultShippingCode = $this->settings['defaultShippingCode'];
         $defaultDiscountCode = $this->settings['defaultDiscountCode'];
-
-
+        
+        // Add shipping as line item
         $t = $transaction->withTransactionCode(
                 $this->getTransactionCode($order)
             )
