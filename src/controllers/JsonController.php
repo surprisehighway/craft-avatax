@@ -59,7 +59,6 @@ class JsonController extends Controller
             'addressLine2',
             'locality',
             'postalCode',
-            'alternativePhone',
             'organization',
             'organizationTaxId',
             'countryCode',
