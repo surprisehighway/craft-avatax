@@ -408,6 +408,24 @@ Event::on(
 );
 ```
 
+You can override the default shippingItemCode or shippingTaxCode for an order.
+
+```php
+<?php
+
+use surprisehighway\avatax\events\ApplyShippingCodeEvent;
+use surprisehighway\avatax\services\SalesTaxService;
+use yii\base\Event;
+
+Event::on(
+    SalesTaxService::class,
+    SalesTaxService::EVENT_APPLY_SHIPPING_CODE,
+    function (ApplyShippingCodeEvent $event) {
+        $event->shippingTaxCode = 'FR020100'; // Override the default shipping code 
+    }
+);
+```
+
 ## AvaTax Plugin Roadmap
 
 Some things to do, and ideas for potential features:
