@@ -26,6 +26,7 @@ use craft\commerce\models\Transaction;
 use craft\commerce\elements\Order;
 use craft\commerce\helpers\Currency;
 
+use surprisehighway\avatax\events\ApplyShippingCodeEvent;
 use yii\base\Exception;
 use yii\log\Logger;
 
@@ -36,6 +37,7 @@ use yii\log\Logger;
  */
 class SalesTaxService extends Component
 {
+    public const EVENT_APPLY_SHIPPING_CODE = 'eventApplyShippingCode';
 
     // Public Properties
     // =========================================================================
@@ -573,7 +575,7 @@ class SalesTaxService extends Component
      * @return object
      *
      */
-    private function getTotalTax($order, $transaction)
+    private function getTotalTax(Order $order, $transaction)
     {
         if($this->settings['enableAddressValidation'] && $order->shippingAddress)
         {
@@ -587,6 +589,7 @@ class SalesTaxService extends Component
         $defaultTaxCode = $this->settings['defaultTaxCode'];
         $defaultShippingCode = $this->settings['defaultShippingCode'];
         $defaultDiscountCode = $this->settings['defaultDiscountCode'];
+
 
         $t = $transaction->withTransactionCode(
                 $this->getTransactionCode($order)
@@ -683,14 +686,20 @@ class SalesTaxService extends Component
             }
         }
 
-        // Add shipping cost as line-item
-        $shippingTaxCode = $defaultShippingCode;
+        $applyShippingCodeEvent = new ApplyShippingCodeEvent([
+            'order' => $order,
+            'shippingTaxCode' => $defaultShippingCode,
+        ]);
+
+        if ($this->hasEventHandlers(self::EVENT_APPLY_SHIPPING_CODE)) {
+            $this->trigger(self::EVENT_APPLY_SHIPPING_CODE, $applyShippingCodeEvent);
+        }
 
         $t = $t->withLine(
-            $order->getTotalShippingCost(),  // total amount for the line item
-            1,                                              // quantity
-            "FREIGHT",                                      // Item Code
-            $shippingTaxCode                                // Tax code for freight (Shipping)
+            $order->getTotalShippingCost(), // total amount for the line item
+            1, // quantity
+            $applyShippingCodeEvent->shippingItemCode, // Item Code
+            $applyShippingCodeEvent->shippingTaxCode // Tax code for freight (Shipping)
         );
 
         // add description to shipping line item
