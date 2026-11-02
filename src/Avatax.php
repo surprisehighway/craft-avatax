@@ -38,6 +38,7 @@ use craft\commerce\services\OrderAdjustments;
 use craft\commerce\services\Payments;
 use craft\commerce\services\TaxCategories;
 
+use yii\base\Application;
 use yii\base\Event;
 
 /**
@@ -205,7 +206,13 @@ class Avatax extends Plugin
         if (Craft::$app->config->env === 'test') {
             return;
         }
-        
+
+        // Avatax can install before Commerce on a fresh install with project config (alphabetical order)
+        if (!Craft::$app->getPlugins()->isPluginInstalled('commerce')) {
+            $this->deferInstallUntilCommerce();
+            return;
+        }
+
         $commerce = CommercePlugin::getInstance();
 
         // Create an "avatax" tax category
@@ -228,6 +235,11 @@ class Avatax extends Plugin
             {
                 Craft::warning('Could not save the Avatax tax category.', 'avatax');
             }
+        }
+
+        // Project config installs bring the fields along, so creating them here would duplicate them
+        if (Craft::$app->getProjectConfig()->get('plugins.' . $this->handle, true) !== null) {
+            return;
         }
 
         // Create avataxTaxCode field
@@ -354,5 +366,35 @@ class Avatax extends Plugin
     public function getSettingsResponse(): mixed
     {
         return Craft::$app->controller->redirect(UrlHelper::cpUrl('avatax/settings'));
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    /**
+     * Run the install setup once Commerce is installed later in the same request.
+     */
+    private function deferInstallUntilCommerce(): void
+    {
+        $ran = false;
+
+        Event::on(
+            Plugins::class,
+            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
+            function (PluginEvent $event) use (&$ran) {
+                if (!$ran && $event->plugin->handle === 'commerce') {
+                    $ran = true;
+                    $this->onAfterInstall();
+                }
+            }
+        );
+
+        // Without Commerce the tax category is never created, so say so instead of failing silently
+        Craft::$app->on(Application::EVENT_AFTER_REQUEST, function () use (&$ran) {
+            if (!$ran) {
+                Craft::warning('Commerce was not installed, so the Avatax tax category and fields were not created. Reinstall Avatax after installing Commerce.', 'avatax');
+            }
+        });
     }
 }
