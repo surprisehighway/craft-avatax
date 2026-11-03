@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.6 - 2026-11-03
+### Changed
+- Updated `avalara/avataxclient` to `^26`.
+
+### Fixed
+- Fixed full refunds failing with a `ModelStateInvalid` error from AvaTax.
+- Fixed an error when installing the plugin before Craft Commerce, such as during `craft install` with project config. [#66](https://github.com/surprisehighway/craft-avatax/issues/66)
+
 ## 4.0.5 - 2026-09-04
 ### Added
 - Added `SalesTaxService::EVENT_APPLY_SHIPPING_CODE`. [#64](https://github.com/surprisehighway/craft-avatax/pull/64)
