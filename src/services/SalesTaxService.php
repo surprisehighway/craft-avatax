@@ -310,6 +310,7 @@ class SalesTaxService extends Component
 
         // begin request
         $client = $this->createClient();
+        $taxAddress = $this->getTaxAddress($order);
 
         $tb = new \Avalara\TransactionBuilder(
             $client, $this->getCompanyCode(),
@@ -325,13 +326,13 @@ class SalesTaxService extends Component
             'Partial refund from Craft Commerce'
         )->withAddress(
             'singleLocation',
-            $order->shippingAddress->addressLine1,
+            $taxAddress?->addressLine1,
             NULL,
             NULL,
-            $order->shippingAddress->locality,
-            $order->shippingAddress->administrativeArea,
-            $order->shippingAddress->postalCode,
-            $order->shippingAddress->countryCode
+            $taxAddress?->locality,
+            $taxAddress?->administrativeArea,
+            $taxAddress?->postalCode,
+            $taxAddress?->countryCode
         )->withCommit();
 
         // add entity/use code if set for the customer
@@ -570,6 +571,14 @@ class SalesTaxService extends Component
     }
 
     /**
+     * The address tax is calculated for: the shipping address, or the billing address when the order doesn't have one.
+     */
+    public function getTaxAddress(Order $order): ?Address
+    {
+        return $order->getShippingAddress() ?? $order->getBillingAddress();
+    }
+
+    /**
      * @param object Order $order
      * @param object Avatax\TransactionBuilder $transaction
      * @return object
@@ -577,10 +586,20 @@ class SalesTaxService extends Component
      */
     private function getTotalTax(Order $order, $transaction)
     {
-        if($this->settings['enableAddressValidation'] && $order->shippingAddress)
+        $taxAddress = $this->getTaxAddress($order);
+
+        // Skip the request, since AvaTax requires a ship-to address
+        if($taxAddress === null)
+        {
+            Avatax::info(__FUNCTION__.'(): Order '.$order->number.' doesn\'t have a shipping or billing address.');
+
+            return false;
+        }
+
+        if($this->settings['enableAddressValidation'])
         {
             // Make sure we have a valid address before continuing.
-            if($this->validateAddress($order->shippingAddress) === false)
+            if($this->validateAddress($taxAddress) === false)
             {
                 return false;
             }
@@ -606,13 +625,13 @@ class SalesTaxService extends Component
             )
             ->withAddress(
                 'shipTo',
-                $order->shippingAddress->addressLine1,
+                $taxAddress->addressLine1,
                 NULL,
                 NULL,
-                $order->shippingAddress->locality,
-                $order->shippingAddress->administrativeArea,
-                $order->shippingAddress->postalCode,
-                $order->shippingAddress->countryCode
+                $taxAddress->locality,
+                $taxAddress->administrativeArea,
+                $taxAddress->postalCode,
+                $taxAddress->countryCode
             );
 
         // Add each line item to the transaction
@@ -759,12 +778,13 @@ class SalesTaxService extends Component
         $tax = $order->getTotalTax();
         $total = $order->totalPrice;
 
-        $addressLine1 = $order->shippingAddress->addressLine1;
-        $addressLine2 = $order->shippingAddress->addressLine2;
-        $city = $order->shippingAddress->locality;
-        $state = $order->shippingAddress->administrativeArea;
-        $zipCode = $order->shippingAddress->postalCode;
-        $country = $order->shippingAddress->countryCode;
+        $taxAddress = $this->getTaxAddress($order);
+        $addressLine1 = $taxAddress?->addressLine1;
+        $addressLine2 = $taxAddress?->addressLine2;
+        $city = $taxAddress?->locality;
+        $state = $taxAddress?->administrativeArea;
+        $zipCode = $taxAddress?->postalCode;
+        $country = $taxAddress?->countryCode;
         $address = $addressLine1.$addressLine2.$city.$state.$zipCode.$country;
 
         $lineItems = '';
