@@ -37,7 +37,7 @@ This repo is only the plugin. It has no tests, linter, build step or `vendor/` d
 2. the `enableTaxCalculation` setting
 3. the request params `avatax_disable_tax_calculation` / `avatax_force_tax_calculation`
 
-It then builds an `\Avalara\TransactionBuilder` (SalesOrder, not committed). `createSalesInvoice()` does the same with SalesInvoice + `withCommit()`. Both meet in the private `getTotalTax()`, which does most of the work:
+It then builds an `\Avalara\TransactionBuilder` (SalesOrder, not committed). `createSalesInvoice()` does the same with SalesInvoice + `withCommit()`. It doesn't re-run the checks above. It commits only when the order's tax adjustment shows AvaTax calculated tax for the cart (`sourceSnapshot['avatax']` set and not `false`), so AvaTax never records tax the customer wasn't charged. Both meet in the private `getTotalTax()`, which does most of the work:
 - **Line items:** only line items whose tax category handle is `avatax` are sent. The tax code is the product's `avataxTaxCode` field, falling back to `defaultTaxCode`.
 - **Shipping:** sent as its own line. `EVENT_APPLY_SHIPPING_CODE` can override its item and tax code.
 - **Discounts:** discount adjustments are sent as negative lines with `defaultDiscountCode`, or with the line item's tax code when the discount targets one line item.

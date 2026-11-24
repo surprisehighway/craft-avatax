@@ -253,7 +253,7 @@ To disable tax calculation for a form even if the plugin’s Tax Calculation set
 To force tax calculation for a form even if the plugin’s Tax Calculation setting is disabled add the following input to your form:
 
 ```
-<input type="hidden" name="avatax_disable_tax_calculation" value="1">
+<input type="hidden" name="avatax_force_tax_calculation" value="1">
 ```
 ...or the twig helper
 ```
@@ -261,6 +261,8 @@ To force tax calculation for a form even if the plugin’s Tax Calculation setti
 ```
 
 > Note: This setting will not force a new API request if the Avatax response is already cached. It will just force the plugin to behave as if the setting was enabled.
+
+When an order is completed, a sales invoice is only committed to AvaTax if the cart’s last tax calculation came from AvaTax. If calculation was disabled for the cart, no invoice is committed, so AvaTax doesn’t record tax the customer wasn’t charged.
 
 The values are parsed using the PHP validate filter [FILTER_VALIDATE_BOOLEAN](https://www.php.net/manual/en/filter.filters.validate.php) so values return true for "1", "true", "on" and "yes". Returns false otherwise.
 
@@ -399,7 +401,7 @@ Event::on(
     function (BeforeCreateSalesOrderEvent $event) {
         // Example rule: skip tax calculation for carts in a specific state
         $order = $event->order;
-        if (!order->myCustomField === true) {
+        if ($order->myCustomField === true) {
             $event->isValid = false; // Cancel AvaTax calculation for this order
 
             $event->handled = true; // Optionally prevent other event handlers from overriding.
@@ -407,6 +409,8 @@ Event::on(
     }
 );
 ```
+
+When calculation is canceled for a cart, no sales invoice is committed to AvaTax when that order is completed.
 
 You can override the default shippingItemCode or shippingTaxCode for an order.
 

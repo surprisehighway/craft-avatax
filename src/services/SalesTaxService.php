@@ -174,6 +174,14 @@ class SalesTaxService extends Component
             return false;
         }
 
+        // Don't commit tax the customer wasn't charged, e.g. when tax calculation was disabled or canceled by an event
+        if(!$this->hasCalculatedTax($order))
+        {
+            Avatax::info(__FUNCTION__.'(): Order '.$order->number.' has no AvaTax tax calculation, so no sales invoice was committed.');
+
+            return false;
+        }
+
         $this->type = 'invoice';
 
         $client = $this->createClient();
@@ -568,6 +576,25 @@ class SalesTaxService extends Component
 
         // Don't have credentials
         Avatax::error('Avatax Account Credentials not found. Check the plugin settings.');
+    }
+
+    /**
+     * Whether the order's last recalculation got a tax amount from AvaTax.
+     * AvataxTaxAdjuster stores the result in the adjustment's source snapshot, which is false when calculation was skipped or failed.
+     */
+    private function hasCalculatedTax(Order $order): bool
+    {
+        foreach($order->getAdjustmentsByType('tax') as $adjustment)
+        {
+            $snapshot = $adjustment->getSourceSnapshot();
+
+            if(array_key_exists('avatax', $snapshot) && $snapshot['avatax'] !== false)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
