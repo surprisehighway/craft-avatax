@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.1 - 2026-11-24
+### Fixed
+- Fixed a sales invoice being committed to AvaTax when tax wasn't calculated for the cart, such as when the Tax Calculation setting was disabled or `EVENT_BEFORE_CREATE_SALES_ORDER` canceled it. AvaTax no longer records tax the customer wasn't charged.
+
 ## 4.1.0 - 2026-11-24
 ### Changed
 - Tax is now calculated from the billing address when an order has no shipping address. Previously, no tax was calculated for those orders. [#69](https://github.com/surprisehighway/craft-avatax/pull/69)
