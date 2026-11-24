@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.0 - 2026-11-24
+### Changed
+- Tax is now calculated from the billing address when an order has no shipping address. Previously, no tax was calculated for those orders. [#69](https://github.com/surprisehighway/craft-avatax/pull/69)
+
 ## 4.0.6 - 2026-11-03
 ### Changed
 - Updated `avalara/avataxclient` to `^26`.
